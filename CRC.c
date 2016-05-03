@@ -9,7 +9,7 @@ short checkCrc(unsigned char package[]){
 	return 0;
 }
 
-unsigned char calculate_CRC(unsigned short id, unsigned char first_byte, unsigned char second_byte){
+unsigned char calculate_CRC(unsigned char id, unsigned char first_byte, unsigned char second_byte){
 	/*
 	 * Use Device ID (ID), first and second byte (first_byte, second_byte) to calculate CRC.
 	 * Return crc value.
