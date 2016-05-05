@@ -19,13 +19,16 @@ void resetMeasurementResults(void);
 extern unsigned short measurement_results[SAMPLE_COUNT] = {0};
 
 void syncCableInterupHandler(void){
-	GPIOD->ICR = (1<<0);         // clear the interrupt flag
+	// clear the interrupt flag
+	GPIOD->ICR = (1<<0);
+	//Check if interrupt occurred during communication, if so, set flag up.
 	setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
+	//Perform measurement work
 	measurement_work(measurement_results);
 }
 
 void resetMeasurementResults(void){
-	//Reinit or clean measurement_results[]
+	//Reinit or clean measurement results
 	memset(measurement_results, 0, SAMPLE_COUNT * sizeof(unsigned char));
 	clearMeasurementsResultsPresentBit();
 }
@@ -35,9 +38,9 @@ void waitNextAction(){
 	while (1){
 		// Read new pacakge, where first byte is ID or GLOBAL_ID
 		readPackage(package);
-		if (!PRINT_DEBUG){
+		/*if (!PRINT_DEBUG){
 			writeCharPackageOut(package, 1);
-		}
+		}*/
 		// Byte did not contain ID.
 		if (package[0] == ID){
 			switch(package[1]){
@@ -121,6 +124,8 @@ void main(void){
 
 	//Init LEDs for feedback.
 	initializeLEDs();
+	// Default interval is 1, when calling delay_timer, prived counter how many times to delay.
+	initialize_delay_timer();
 
 	//Init UART 5 for communication.
 	initializeUART5();

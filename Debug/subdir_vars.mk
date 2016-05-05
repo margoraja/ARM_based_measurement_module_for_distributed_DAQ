@@ -25,22 +25,22 @@ OBJS += \
 ./tm4c123gh6pm_startup_ccs.obj 
 
 C_DEPS += \
-./CRC.pp \
-./Communication.pp \
-./Measurement.pp \
-./Timers.pp \
-./Utils.pp \
-./main.pp \
-./tm4c123gh6pm_startup_ccs.pp 
+./CRC.d \
+./Communication.d \
+./Measurement.d \
+./Timers.d \
+./Utils.d \
+./main.d \
+./tm4c123gh6pm_startup_ccs.d 
 
 C_DEPS__QUOTED += \
-"CRC.pp" \
-"Communication.pp" \
-"Measurement.pp" \
-"Timers.pp" \
-"Utils.pp" \
-"main.pp" \
-"tm4c123gh6pm_startup_ccs.pp" 
+"CRC.d" \
+"Communication.d" \
+"Measurement.d" \
+"Timers.d" \
+"Utils.d" \
+"main.d" \
+"tm4c123gh6pm_startup_ccs.d" 
 
 OBJS__QUOTED += \
 "CRC.obj" \

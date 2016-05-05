@@ -39,7 +39,7 @@ void setCommunicationToTransmit(void){
 	 * 3. Enable UART5 with transmitting
 	 */
 	setGreenLED();
-	delay_timer5_for_UART_switching();
+	delay_timer(UART_SWITCHING_DELAY*2);
 	UART5->CTL = (0<<0);
 	GPIOB->DATA = ~(RS485_RECEIVE<<4);
 	UART5->CTL = (1<<0)|(1<<8);
@@ -51,7 +51,7 @@ void setCommunicationToReceive(void){
 	 * 2. Reconfigure RS485 to receive
 	 * 3. Enable UARt5 with receive
 	 */
-	delay_timer5_for_UART_switching();
+	delay_timer(UART_SWITCHING_DELAY/2);
 	UART5->CTL = (0<<0);
 	GPIOB->DATA = (RS485_RECEIVE<<4);
 	UART5->CTL = (1<<0)|(1<<9);
@@ -75,8 +75,6 @@ void initializeRS485Controller(void){
 
 void initializeUART5(void){
 	// Initialize timer5 for changing RS485 mode.
-	// Set timer interval to half of the baud-rate.
-	initialize_timer5_for_UART_switching(UART_SWITCHING_DELAY);
 
 	//Initlize RS485 chip controller. Sets to listening.
 	initializeRS485Controller();
@@ -248,7 +246,7 @@ void writeCharPackageOut(unsigned char *package, short change_rs485_mode){
 void sendResults(unsigned short results[]){
 	int counter = 0;
 	unsigned char package[PACKAGE_SIZE];
-	package[0] = ID;
+	package[0] = 107;
 	setCommunicationToTransmit();
 	while (SAMPLE_COUNT >= counter){
 		/*
@@ -276,6 +274,7 @@ void sendResults(unsigned short results[]){
 			writeCharPackageOut(package, 0);
 		}
 		counter++;
+		delay_timer(10);
 	}
 	setCommunicationToReceive();
 	setMeasurementsSentBit();

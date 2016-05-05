@@ -52,7 +52,7 @@ void initialize_timer2(int delay){
 	TIMER2->CTL |= (1<<0);
 }
 
-void initialize_timer3(int delay){
+void initialize_timer3(void){
 	//timer
 	SYSCTL->RCGCTIMER |= (1<<3);
 	//timer off
@@ -64,7 +64,7 @@ void initialize_timer3(int delay){
 	//set count direction
 	TIMER3->TAMR &= ~(1<<4);
 	//count to
-	TIMER3->TAILR = delay;
+	TIMER3->TAILR = 16000000;
 	//interupts not used
 	TIMER3->CTL |= (1<<0);
 }
@@ -86,7 +86,7 @@ void initialize_timer4_for_measurement_delays(int delay){
 	TIMER4->CTL |= (1<<0);
 }
 
-void initialize_timer5_for_UART_switching(int delay){
+void initialize_delay_timer(void){
 	//Enable timer.
 	SYSCTL->RCGCTIMER |= (1<<5);
 	//Turn timer off for configuration.
@@ -98,7 +98,7 @@ void initialize_timer5_for_UART_switching(int delay){
 	//Set count direction from up to down.
 	TIMER5->TAMR |= (0<<4);
 	//Counter from which to count to / from which to count from.
-	TIMER5->TAILR = delay;
+	TIMER5->TAILR = 10;
 	//Activate timer.
 	TIMER5->CTL |= (1<<0);
 }
@@ -156,12 +156,15 @@ void delay_timer4_for_measurement(void){
 	TIMER4->CTL |= (0<<0);
 }
 
-void delay_timer5_for_UART_switching(void){
-	TIMER5->ICR |= (1<<0);
-	while(1){
-		//check if counted down
-		if ((TIMER5->RIS & 0x00000001) == 1) {
-			break;
+void delay_timer(int counts){
+	int i;
+	for (i = 0; i<counts; i++){
+		TIMER5->ICR |= (1<<0);
+		while(1){
+			//check if counted down
+			if ((TIMER5->RIS & 0x00000001) == 1) {
+				break;
+			}
 		}
 	}
 }
