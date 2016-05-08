@@ -5,7 +5,8 @@
 void setCommunicationToTransmit(void);
 void setCommunicationToReceive(void);
 void initializeRS485Controller(void);
-int readByte(void);
+int readFirstByte(void);
+int readNextBytes(void);
 void __writeCharByteOut(char);
 void __writeIntByteOut(int);
 void debug_writeStringOut(char *, short);
@@ -144,6 +145,7 @@ void initializeUART5(void){
 	 *			0 disabled, 1 enabled
 	 */
 	setCommunicationToReceive();
+	initialize_communication_timeout_timer();
 
 }
 
@@ -151,14 +153,22 @@ void initializeUART5(void){
  * 	##### Reading data from UART <- RS485 #####
  */
 
-int readByte(void){
-
-	/*	Wait for UART5 not to be busy (full).
+int readFirstByte(void){
+	/* Used to read first byte of package
+	 * Wait for UART5 not to be busy (full).
 	 *		Read UAR-FR bit 4 -> 0 or 1 -> compare to != 0.
 	 *		0 is not empty, 1 is empty.
 	 *	Read data from UART5 Data (8 bits) and return it.
 	 */
-	while(((UART5->FR & (1<<4)) != 0) && (!interrupt_occurred));
+	while((UART5->FR & (1<<4)) != 0);
+	return UART5->DR;
+}
+
+int readNextBytes(void){
+	/* Used to read next bytes, not the first one.
+	 * Waits untill A) Byte is received, B) Interrupt was called -> package is discarded, C) New byte was not received brefore timeout.
+	 */
+	while(((UART5->FR & (1<<4)) != 0) && (!interrupt_occurred) && (communication_timeout == 0));
 	return UART5->DR;
 }
 
@@ -171,19 +181,25 @@ void readPackage(unsigned char *package){
 	while(crc_Not_Ok){
 		byte_counter = 0;
 		setIntOccurredValue(0);
+		communication_timeout = 0;
 		/* Read untill package has been read in or interrupt occurs while reading in. */
-		while ((byte_counter < PACKAGE_SIZE) && (interrupt_occurred == 0)){
-			package[byte_counter] = readByte();
+		package[byte_counter] = readFirstByte();
+		byte_counter++;
+		enabale_communication_timeout_timer();
+		while ((byte_counter < PACKAGE_SIZE) && (interrupt_occurred == 0) && (communication_timeout == 0)){
+			reset_communication_timeout_timer();
+			package[byte_counter] = readNextBytes();
 			byte_counter++;
 		}
 		/* Discard data when not valid (Interrupt occurred during package read in AND (first byte is not ID nor Global ID)) */
-		if ((!interrupt_occurred) && (package[0] == ID || package[0] == GLOBAL_ID)){
+		if ((!interrupt_occurred) && (package[0] == ID || package[0] == GLOBAL_ID) && (communication_timeout == 0)){
 			if (CRC_INCLUDED && checkCrc(package)){
 				setInvalidPackageBit();
 			}else{
 				crc_Not_Ok = 0;
 			}
 		}
+		disabale_communication_timeout_timer();
 	}
 	//Make sure that byte_counter is 0 when not reading data from UART.
 	byte_counter = 0;
@@ -244,40 +260,42 @@ void writeCharPackageOut(unsigned char *package, short change_rs485_mode){
 }
 
 void sendResults(unsigned short results[]){
-	int counter = 0;
-	unsigned char package[PACKAGE_SIZE];
-	package[0] = 107;
-	setCommunicationToTransmit();
-	while (SAMPLE_COUNT >= counter){
-		/*
-		 * results[counter] & 0xFC0; //ADC result 0-6 bit mask: 0b000000111111 = 63 = 3F
-		 * plus data start mask (0b01******)
-		 */
-		package[1] = DATA_START|(results[counter]>>6);
-		/*
-		 * ADC result 7-11 bit mask: 0b111111000000 = 4032 = FC0
-		 * plus data end mask (0b11******)
-		 */
-		package[2] = DATA_END|results[counter] & 0x3F;
-		/*
-		 * CRC calculated from package[0] to package[2]
-		 */
-		package[3] = calculate_CRC(package[0], package[1], package[2]);
+	if (GET_MEASUREMENTS_PRESENT_BIT){
+		int counter = 0;
+		unsigned char package[PACKAGE_SIZE];
+		package[0] = 107;
+		setCommunicationToTransmit();
+		while (SAMPLE_COUNT >= counter){
+			/*
+			 * results[counter] & 0xFC0; //ADC result 0-6 bit mask: 0b000000111111 = 63 = 3F
+			 * plus data start mask (0b01******)
+			 */
+			package[1] = DATA_START|(results[counter]>>6);
+			/*
+			 * ADC result 7-11 bit mask: 0b111111000000 = 4032 = FC0
+			 * plus data end mask (0b11******)
+			 */
+			package[2] = DATA_END|results[counter] & 0x3F;
+			/*
+			 * CRC calculated from package[0] to package[2]
+			 */
+			package[3] = calculate_CRC(package[0], package[1], package[2]);
 
-		if (PRINT_DEBUG){
-			debug_writeByteInBinary(results[counter]>>8, 0);
-			debug_writeByteInBinary(results[counter] & 0xFF, 0);
-			debug_writeStringOut(" --> ", 0);
-			debug_writePackageBytesInBinary(package, 0);
-			debug_writeStringOut("\n\r\n\r", 0);
-		}else{
-			writeCharPackageOut(package, 0);
+			if (PRINT_DEBUG){
+				debug_writeByteInBinary(results[counter]>>8, 0);
+				debug_writeByteInBinary(results[counter] & 0xFF, 0);
+				debug_writeStringOut(" --> ", 0);
+				debug_writePackageBytesInBinary(package, 0);
+				debug_writeStringOut("\n\r\n\r", 0);
+			}else{
+				writeCharPackageOut(package, 0);
+			}
+			counter++;
+			delay_timer(10);
 		}
-		counter++;
-		delay_timer(10);
+		setCommunicationToReceive();
+		setMeasurementsSentBit();
 	}
-	setCommunicationToReceive();
-	setMeasurementsSentBit();
 }
 
 void sendState(void){

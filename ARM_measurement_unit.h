@@ -53,6 +53,7 @@
 #define FLOAT_BRD 44
 #define RS485_RECEIVE 0 //Receive mode level. High = 1, Low = 0.
 #define UART_SWITCHING_DELAY 100000 // Is multiplied by 10. 1.6M is ~1 second; 0.4M is ~1/4 of second; 0.1M is ~1/16 of second.
+#define COMMUNICATION_TIMEOUT 16000000 //For discarding incomplete packages.
 
 /* ===================================================================
  * ==========	Predefined commands sent by controller.		==========
@@ -134,5 +135,6 @@ unsigned short state;
 extern unsigned short measurement_results[SAMPLE_COUNT]; //Should be dynamically allocated.
 short interrupt_occurred;//Used to keep track if interrupt was received during the pacakge reading. Will be left 1 if byte_counter is above 0.
 short byte_counter;
+short communication_timeout;
 
 #endif /* ARM_MEASUREMENT_UNIT_H_ */

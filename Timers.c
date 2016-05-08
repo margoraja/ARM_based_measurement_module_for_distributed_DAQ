@@ -52,7 +52,7 @@ void initialize_timer2(int delay){
 	TIMER2->CTL |= (1<<0);
 }
 
-void initialize_timer3(void){
+void initialize_communication_timeout_timer(void){
 	//timer
 	SYSCTL->RCGCTIMER |= (1<<3);
 	//timer off
@@ -60,13 +60,18 @@ void initialize_timer3(void){
 	//GPTM register
 	TIMER3->CFG = 0x00000000;
 	//TnMR
-	TIMER3->TAMR |= (0x2<<0);
+	TIMER3->TAMR |= (0x1<<0);
 	//set count direction
 	TIMER3->TAMR &= ~(1<<4);
 	//count to
-	TIMER3->TAILR = 16000000;
-	//interupts not used
-	TIMER3->CTL |= (1<<0);
+	TIMER3->TAILR = COMMUNICATION_TIMEOUT;
+	//enable interupt
+	TIMER3->IMR = (1<<0);
+	//Enable interrupt priority.
+	//NVIC_EnableIRQ(TIMER3A_IRQn);
+	//NVIC->IP[9] |= (5<<5);
+	// enable  interrupts on gpiod
+	NVIC->ISER[1] |= (1<<3);
 }
 
 void initialize_timer4_for_measurement_delays(int delay){
@@ -134,18 +139,26 @@ void delay_timer2(void){
 	}
 }
 
-void delay_timer3(void){
+void enabale_communication_timeout_timer(void){
+	TIMER3->CTL |= (1<<0);
 	TIMER3->ICR |= (1<<0);
-	while(1){
-		//check if counted down
-		if ((TIMER3->RIS & 0x00000001) == 1) {
-			break;
-		}
-	}
+}
+
+void disabale_communication_timeout_timer(void){
+	TIMER3->CTL |= (0<<0);
+
+}
+
+void reset_communication_timeout_timer(void){
+	disabale_communication_timeout_timer();
+	enabale_communication_timeout_timer();
+}
+
+int get_communication_timeout_flag(void){
+	return (TIMER3->RIS & 0x00000001);
 }
 
 void delay_timer4_for_measurement(void){
-	TIMER4->CTL |= (1<<0);
 	TIMER4->ICR |= (1<<0);
 	while(1){
 		//check if counted down
@@ -153,7 +166,6 @@ void delay_timer4_for_measurement(void){
 			break;
 		}
 	}
-	TIMER4->CTL |= (0<<0);
 }
 
 void delay_timer(int counts){

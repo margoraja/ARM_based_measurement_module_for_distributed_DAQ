@@ -27,10 +27,17 @@ void syncCableInterupHandler(void){
 	measurement_work(measurement_results);
 }
 
+void communicationTimeout(void){
+	TIMER3->ICR = (1<<0);
+	communication_timeout = 1;
+}
+
 void resetMeasurementResults(void){
-	//Reinit or clean measurement results
-	memset(measurement_results, 0, SAMPLE_COUNT * sizeof(unsigned char));
-	clearMeasurementsResultsPresentBit();
+	if (GET_MEASUREMENTS_SENT_BIT){
+		//Reinit or clean measurement results
+		memset(measurement_results, 0, SAMPLE_COUNT * sizeof(unsigned char));
+		clearMeasurementsResultsPresentBit();
+	}
 }
 
 void waitNextAction(){
@@ -46,7 +53,7 @@ void waitNextAction(){
 			switch(package[1]){
 				case SEND_RESULTS:
 					// Send measurement results.
-					if (GET_MEASUREMENTS_PRESENT_BIT){sendResults(measurement_results);}
+					sendResults(measurement_results);
 					break;
 
 				case START_MEASURING:

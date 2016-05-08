@@ -95,8 +95,8 @@ void inintSyncCableInput(void){
 	GPIOD->IM  |= (1<<0);         // unmask interrupt
 
 	// enable interrupt in NVIC and set priority to 6
-	NVIC->IP[3] = (6<<5);       // set interrupt priority to 6
-	NVIC->ISER[0] |= 0x00000008;    // enable IRQ3
+	NVIC->IP[3] |= (6<<5);       // set interrupt priority to 6
+	NVIC->ISER[0] |= (1<<3);    // enable IRQ3
 }
 
 unsigned long initAdc0GetResults(void){
