@@ -131,10 +131,10 @@
  * ==========	Variables	==========
  * ===================================
  */
-unsigned short state;
-extern unsigned short measurement_results[SAMPLE_COUNT]; //Should be dynamically allocated.
-short interrupt_occurred;//Used to keep track if interrupt was received during the pacakge reading. Will be left 1 if byte_counter is above 0.
-short byte_counter;
-short communication_timeout;
+uint8_t state;
+extern uint8_t measurement_results[SAMPLE_COUNT]; //Should be dynamically allocated.
+uint8_t interrupt_occurred;//Used to keep track if interrupt was received during the pacakge reading. Will be left 1 if byte_counter is above 0.
+uint8_t byte_counter;
+uint8_t communication_timeout;
 
 #endif /* ARM_MEASUREMENT_UNIT_H_ */

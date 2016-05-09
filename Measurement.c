@@ -1,9 +1,9 @@
 
 #include "ARM_measurement_unit.h"
 
-void performeMeasurements(unsigned short *);
+void performeMeasurements(uint8_t *);
 
-//extern unsigned short measurement_results[SAMPLE_COUNT];
+//extern uint8_t measurement_results[SAMPLE_COUNT];
 
 void initAdc0(void){
 	/* Initilize ADC module timer*/
@@ -108,7 +108,7 @@ unsigned long initAdc0GetResults(void){
 	return ADC0->SSFIFO3 & 0xFFF;
 }
 
-void performeMeasurements(unsigned short results[]){
+void performeMeasurements(uint8_t results[]){
 	setBlueLED();
 	unsigned int counter = 0;
 	/*	Must be able to set "internval" or sample rate. -> Porbably set in ARM_measurement_unit.h file.*/
@@ -128,13 +128,13 @@ void measurement_signal_generation(void){
 	;
 }
 
-void measurement_measure(unsigned short measurement_results[]){
+void measurement_measure(uint8_t measurement_results[]){
 	if ((GET_MEASUREMENTS_SENT_BIT == 1) || OVERWRITE_OLD_RESULTS || (GET_MEASUREMENTS_PRESENT_BIT == 0)){
 		performeMeasurements(measurement_results);
 	}
 }
 
-void measurement_work(unsigned short measurement_results[]){
+void measurement_work(uint8_t measurement_results[]){
 	measurement_signal_generation();
 	measurement_measure(measurement_results);
 }

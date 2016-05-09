@@ -16,7 +16,7 @@
 void waitNextAction(void);
 void resetMeasurementResults(void);
 
-extern unsigned short measurement_results[SAMPLE_COUNT] = {0};
+extern uint8_t measurement_results[SAMPLE_COUNT] = {0};
 
 void syncCableInterupHandler(void){
 	// clear the interrupt flag
@@ -35,13 +35,13 @@ void communicationTimeout(void){
 void resetMeasurementResults(void){
 	if (GET_MEASUREMENTS_SENT_BIT){
 		//Reinit or clean measurement results
-		memset(measurement_results, 0, SAMPLE_COUNT * sizeof(unsigned char));
+		memset(measurement_results, 0, SAMPLE_COUNT * sizeof(uint8_t));
 		clearMeasurementsResultsPresentBit();
 	}
 }
 
 void waitNextAction(){
-	unsigned char package[PACKAGE_SIZE+1];
+	uint8_t package[PACKAGE_SIZE+1];
 	while (1){
 		// Read new pacakge, where first byte is ID or GLOBAL_ID
 		readPackage(package);

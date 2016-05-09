@@ -9,10 +9,10 @@
 #define COMMUNICATION_H_
 
 void initializeUART5(void);
-void readPackage(unsigned char *);
-void writeCharPackageOut(unsigned char *, short);
-void writeIntPackageOut(int *, short);
-void sendResults(unsigned short *);
+void readPackage(uint8_t *);
+void writeCharPackageOut(uint8_t *, uint8_t);
+void writeIntPackageOut(int *, uint8_t);
+void sendResults(uint8_t *);
 void sendState(void);
 
 #endif /* COMMUNICATION_H_ */

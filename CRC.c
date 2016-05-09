@@ -5,14 +5,51 @@
  * Returns 0 if all OK
  * Returns 1 if CRC does not match with the payload.
  */
-short checkCrc(unsigned char package[]){
-	return 0;
-}
 
-unsigned char calculate_CRC(unsigned char id, unsigned char first_byte, unsigned char second_byte){
+uint8_t _calculate_8bit_crc(uint8_t, uint8_t);
+
+uint8_t calculate_CRC(uint8_t package[]){
 	/*
 	 * Use Device ID (ID), first and second byte (first_byte, second_byte) to calculate CRC.
 	 * Return crc value.
 	 */
-	return 35;
+	uint8_t i;
+	/* Init CRC value. */
+	uint8_t crc = 0;
+
+	/* Calculate CRC from payload. */
+	for (i = 0; i<(PACKAGE_SIZE - 1); i++){
+		crc = _calculate_8bit_crc(crc, package[i]);
+	}
+	return crc;
+}
+
+uint8_t _calculate_8bit_crc (uint8_t inCrc, uint8_t inData){
+   uint8_t i;
+   uint8_t data;
+   /* Add data without clearing previously calculated crc (if was set), using OR. */
+   data = inCrc ^ inData;
+
+   /* 8 times (shifting to left by one and fliping three lowest bits) or shifting to left by one. */
+   for ( i = 0; i < 8; i++ ){
+	   if (( data & 0x80 ) != 0 ){
+		   data <<= 1;
+		   data ^= 0x07;
+	   } else {
+		   data <<= 1;
+	   }
+   }
+   return data;
+}
+
+/*
+ * Check if CRC is OK or not.
+ * Returning 0 in case of error, 1 otherwise.
+ */
+uint8_t checkCrcIsOk(uint8_t package[]){
+	if (calculate_CRC(package) != package[PACKAGE_SIZE - 1]){
+		return 0;
+	} else {
+		return 1;
+	}
 }

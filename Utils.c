@@ -1,8 +1,8 @@
 
 #include "ARM_measurement_unit.h"
 
-void setStateBit(short);
-void clearStateBit(short);
+void setStateBit(uint8_t);
+void clearStateBit(uint8_t);
 
 void setBlueLED(void){
 	GPIOF->DATA = (1<<2);
@@ -70,7 +70,7 @@ void setInvalidPackageBit(void){
 	setStateBit(INVALID_PACKAGE_BIT);
 }
 
-void setStateBit(short bit_number){
+void setStateBit(uint8_t bit_number){
 	state |= (1 << bit_number);
 }
 
@@ -92,7 +92,7 @@ void clearInvalidPackageBit(void){
 	clearStateBit(INVALID_PACKAGE_BIT);
 }
 
-void clearStateBit(short bit_number){
+void clearStateBit(uint8_t bit_number){
 	state &= ~(1 << bit_number);
 }
 
@@ -105,6 +105,6 @@ void initIntOccurredValue(void){
 	interrupt_occurred = 0;
 }
 
-void setIntOccurredValue(short value){
+void setIntOccurredValue(uint8_t value){
 	interrupt_occurred = value;
 }

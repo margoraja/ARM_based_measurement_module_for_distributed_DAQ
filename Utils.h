@@ -16,7 +16,7 @@ void setLEDoff(void);
 void setLED(void);
 
 void initIntOccurredValue(void);
-void setIntOccurredValue(short);
+void setIntOccurredValue(uint8_t);
 
 void initState(void);
 

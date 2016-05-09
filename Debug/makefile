@@ -13,13 +13,14 @@ ORDERED_OBJS += \
 "./CRC.obj" \
 "./Communication.obj" \
 "./Measurement.obj" \
+"./SignalGenerator.obj" \
 "./Timers.obj" \
 "./Utils.obj" \
 "./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
--llibc.a \
+-l"libc.a" \
 
 -include ../makefile.init
 
@@ -50,9 +51,6 @@ ifneq ($(strip $(ASM_DEPS)),)
 endif
 ifneq ($(strip $(CC_DEPS)),)
 -include $(CC_DEPS)
-endif
-ifneq ($(strip $(SV7A_DEPS)),)
--include $(SV7A_DEPS)
 endif
 ifneq ($(strip $(S55_DEPS)),)
 -include $(S55_DEPS)
@@ -158,8 +156,8 @@ ARM_Measurement_unit.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "CRC.d" "Communication.d" "Measurement.d" "Timers.d" "Utils.d" "main.d" "tm4c123gh6pm_startup_ccs.d" 
-	-$(RM) "CRC.obj" "Communication.obj" "Measurement.obj" "Timers.obj" "Utils.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
+	-$(RM) "CRC.pp" "Communication.pp" "Measurement.pp" "SignalGenerator.pp" "Timers.pp" "Utils.pp" "main.pp" "tm4c123gh6pm_startup_ccs.pp" 
+	-$(RM) "CRC.obj" "Communication.obj" "Measurement.obj" "SignalGenerator.obj" "Timers.obj" "Utils.obj" "main.obj" "tm4c123gh6pm_startup_ccs.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

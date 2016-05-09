@@ -5,22 +5,22 @@
 void setCommunicationToTransmit(void);
 void setCommunicationToReceive(void);
 void initializeRS485Controller(void);
-int readFirstByte(void);
-int readNextBytes(void);
+uint8_t readFirstByte(void);
+uint8_t readNextBytes(void);
 void __writeCharByteOut(char);
 void __writeIntByteOut(int);
-void debug_writeStringOut(char *, short);
-void debug_writeByteInBinary(char, short);
-void debug_writePackageBytesInBinary(unsigned char [], short);
-void writeCharPackageOut(unsigned char *, short);
+void debug_writeStringOut(char *, uint8_t);
+void debug_writeByteInBinary(char, uint8_t);
+void debug_writePackageBytesInBinary(uint8_t [], uint8_t);
+void writeCharPackageOut(uint8_t *, uint8_t);
 
-//extern unsigned short measurement_results[SAMPLE_COUNT];
+//extern uint8_t measurement_results[SAMPLE_COUNT];
 
 /*
 void configureUART5(void);
 void readPackage(int *);
 void writePackageOut(int *);
-void sendResults(unsigned short);
+void sendResults(uint8_t);
 */
 
 /*	Communication protocol uses three bytes on both ways of communication:
@@ -153,7 +153,7 @@ void initializeUART5(void){
  * 	##### Reading data from UART <- RS485 #####
  */
 
-int readFirstByte(void){
+uint8_t readFirstByte(void){
 	/* Used to read first byte of package
 	 * Wait for UART5 not to be busy (full).
 	 *		Read UAR-FR bit 4 -> 0 or 1 -> compare to != 0.
@@ -164,7 +164,7 @@ int readFirstByte(void){
 	return UART5->DR;
 }
 
-int readNextBytes(void){
+uint8_t readNextBytes(void){
 	/* Used to read next bytes, not the first one.
 	 * Waits untill A) Byte is received, B) Interrupt was called -> package is discarded, C) New byte was not received brefore timeout.
 	 */
@@ -172,33 +172,51 @@ int readNextBytes(void){
 	return UART5->DR;
 }
 
-void readPackage(unsigned char *package){
-	int crc_Not_Ok = 1;
-	// TODO: Implement timeout. If hald package is sent (1-3 bytes instead of 4), discard received.
-	//When waiting on communication to come in, above line 174, then timer interrupt does not quite help.
-	//		In some way it should be possible to do it so that system would not wait on new one to come.
-	//		Or in case of error read in the first byte, discard all previous and set the lastly received one as first byte.
-	while(crc_Not_Ok){
+void readPackage(uint8_t *package){
+	int all_not_Ok = 1;
+	/* Running untill all is OK:
+	 * 		No interrupts during communication
+	 * 		No timeout during communication
+	 * 		CRC is OK
+	 * 		first byte is ID or Global ID
+	 */
+	while(all_not_Ok){
+		/* Reset byte counter. */
 		byte_counter = 0;
+		/* Reset interrupt occurred value. */
 		setIntOccurredValue(0);
+		/* Reset communication timeout value. */
 		communication_timeout = 0;
-		/* Read untill package has been read in or interrupt occurs while reading in. */
+		/* Read in the first byte. */
 		package[byte_counter] = readFirstByte();
+		/* Increment byte counter because first byte has been read in. */
 		byte_counter++;
+		/* Enable communication timeout timer. */
 		enabale_communication_timeout_timer();
+		/* Read pacakge */
 		while ((byte_counter < PACKAGE_SIZE) && (interrupt_occurred == 0) && (communication_timeout == 0)){
+			/* Reset communication timeout timer. */
 			reset_communication_timeout_timer();
+			/* Read next byte. */
 			package[byte_counter] = readNextBytes();
 			byte_counter++;
 		}
-		/* Discard data when not valid (Interrupt occurred during package read in AND (first byte is not ID nor Global ID)) */
-		if ((!interrupt_occurred) && (package[0] == ID || package[0] == GLOBAL_ID) && (communication_timeout == 0)){
-			if (CRC_INCLUDED && checkCrc(package)){
+		/* Discard data when not valid:
+		 * 			Interrupt occurred during package read in
+		 * 			First byte is not ID nor Global ID
+		 * 			Timeout occurred during package read in
+		 * 			Last byte (CRC) and calcualted CRC do not match
+		 */
+		if ((!interrupt_occurred) &&
+				(package[0] == ID || package[0] == GLOBAL_ID) &&
+				!communication_timeout){
+			if (CRC_INCLUDED && !(checkCrcIsOk(package))){
 				setInvalidPackageBit();
-			}else{
-				crc_Not_Ok = 0;
+			} else {
+				all_not_Ok = 0; /* All good, received valid package. */
 			}
 		}
+		/* Disable communication timeout timer as it is not needed any more. */
 		disabale_communication_timeout_timer();
 	}
 	//Make sure that byte_counter is 0 when not reading data from UART.
@@ -226,10 +244,10 @@ void __writeIntByteOut(int c){
 	 *	Print data (8 bits) to UART5 DATA.
 	 */
 	while((UART5->FR & (1<<5)) != 0);
-	UART5->DR = (char)c;
+	UART5->DR = c;
 }
 
-void writeIntPackageOut(int *package, short change_rs485_mode){
+void writeIntPackageOut(uint8_t *package, uint8_t change_rs485_mode){
 	/*
 	 * Int is casted to char, so firs 8 lower bits are only sent out.
 	 */
@@ -246,7 +264,7 @@ void writeIntPackageOut(int *package, short change_rs485_mode){
 	}
 }
 
-void writeCharPackageOut(unsigned char *package, short change_rs485_mode){
+void writeCharPackageOut(uint8_t *package, uint8_t change_rs485_mode){
 	int i;
 	if (change_rs485_mode){
 		setCommunicationToTransmit();
@@ -259,10 +277,10 @@ void writeCharPackageOut(unsigned char *package, short change_rs485_mode){
 	}
 }
 
-void sendResults(unsigned short results[]){
+void sendResults(uint8_t results[]){
 	if (GET_MEASUREMENTS_PRESENT_BIT){
 		int counter = 0;
-		unsigned char package[PACKAGE_SIZE];
+		uint8_t package[PACKAGE_SIZE];
 		package[0] = 107;
 		setCommunicationToTransmit();
 		while (SAMPLE_COUNT >= counter){
@@ -279,7 +297,7 @@ void sendResults(unsigned short results[]){
 			/*
 			 * CRC calculated from package[0] to package[2]
 			 */
-			package[3] = calculate_CRC(package[0], package[1], package[2]);
+			package[3] = calculate_CRC(package);
 
 			if (PRINT_DEBUG){
 				debug_writeByteInBinary(results[counter]>>8, 0);
@@ -299,12 +317,12 @@ void sendResults(unsigned short results[]){
 }
 
 void sendState(void){
-	unsigned char package[PACKAGE_SIZE];
+	uint8_t package[PACKAGE_SIZE];
 	package[0] = ID;
 	setCommunicationToTransmit();
 	package[1] = GET_STATE;
 	package[2] = state;
-	package[3] = calculate_CRC(package[0], package[1], package[2]);
+	package[3] = calculate_CRC(package);
 	writeCharPackageOut(package, 0);
 	setCommunicationToReceive();
 	clearInvalidPackageBit();
@@ -314,7 +332,7 @@ void sendState(void){
  * Debug functions for sending data out.
  */
 
-void debug_writeStringOut(char * string, short change_rs485_mode){
+void debug_writeStringOut(char * string, uint8_t change_rs485_mode){
 	if (change_rs485_mode){
 		setCommunicationToTransmit();
 	}
@@ -326,7 +344,7 @@ void debug_writeStringOut(char * string, short change_rs485_mode){
 	}
 }
 
-void debug_writeByteInBinary(char byte, short change_rs485_mode){
+void debug_writeByteInBinary(char byte, uint8_t change_rs485_mode){
 	int j;
 	if (change_rs485_mode){
 		setCommunicationToTransmit();
@@ -345,7 +363,7 @@ void debug_writeByteInBinary(char byte, short change_rs485_mode){
 	}
 }
 
-void debug_writePackageBytesInBinary(unsigned char package[], short change_rs485_mode){
+void debug_writePackageBytesInBinary(uint8_t package[], uint8_t change_rs485_mode){
 	/*
 	 * For debug purposes it's sometimes better to see what is sent out.
 	 */
