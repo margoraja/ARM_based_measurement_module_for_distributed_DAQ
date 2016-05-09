@@ -1,10 +1,3 @@
-/*
- * Timers.h
- *
- *  Created on: 05.04.2016
- *      Author: Max
- */
-
 #ifndef TIMERS_H_
 #define TIMERS_H_
 

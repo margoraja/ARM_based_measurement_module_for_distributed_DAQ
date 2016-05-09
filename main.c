@@ -135,6 +135,9 @@ void main(void){
 	//Init UART 5 for communication.
 	initializeUART5();
 
+	//Init PWM signal generator
+	/* TODO: Implement PWM signal generator, configurable with width and duration (impulse count). */
+
 	//Init analogue-digital-converter for measurements
 	initAdc0();
 

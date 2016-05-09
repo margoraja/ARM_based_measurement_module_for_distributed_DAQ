@@ -1,11 +1,6 @@
 
 #include "ARM_measurement_unit.h"
 
-/*
- * Returns 0 if all OK
- * Returns 1 if CRC does not match with the payload.
- */
-
 uint8_t _calculate_8bit_crc(uint8_t, uint8_t);
 
 uint8_t calculate_CRC(uint8_t package[]){

@@ -1,10 +1,3 @@
-/*
- * Measurement.h
- *
- *  Created on: 10.04.2016
- *      Author: Max
- */
-
 #ifndef MEASUREMENT_H_
 #define MEASUREMENT_H_
 

@@ -1,10 +1,3 @@
-/*
- * Communication.h
- *
- *  Created on: 05.04.2016
- *      Author: Max
- */
-
 #ifndef COMMUNICATION_H_
 #define COMMUNICATION_H_
 

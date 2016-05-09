@@ -1,8 +1,2 @@
-/*
- * SignalGenerator.c
- *
- *  Created on: 08.05.2016
- *      Author: Max
- */
 
-
+#include "ARM_measurement_unit.h"

@@ -3,8 +3,6 @@
 
 void performeMeasurements(uint8_t *);
 
-//extern uint8_t measurement_results[SAMPLE_COUNT];
-
 void initAdc0(void){
 	/* Initilize ADC module timer*/
 	if(SAMPLE_DELAY > 0){
@@ -13,6 +11,10 @@ void initAdc0(void){
 
 	/*ADC Module Initialization*/
 
+	/* TODO: Implement a way to decreace ADC clock speed,
+	 * 			so that ADC produced more accurate measurements
+	 * 			but with the cost of slower sample rate.
+	 */
 	//1. Enable clock to ADC0
 	SYSCTL->RCGCADC |= (1<<0);
 

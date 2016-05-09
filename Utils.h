@@ -1,10 +1,3 @@
-/*
- * Utils.h
- *
- *  Created on: 10.04.2016
- *      Author: Max
- */
-
 #ifndef UTILS_H_
 #define UTILS_H_
 

@@ -1,10 +1,3 @@
-/*
- * CRC.h
- *
- *  Created on: 28.04.2016
- *      Author: Max
- */
-
 #ifndef CRC_H_
 #define CRC_H_
 
