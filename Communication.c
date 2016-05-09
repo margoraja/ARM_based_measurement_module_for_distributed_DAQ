@@ -146,7 +146,6 @@ void initializeUART5(void){
 	 */
 	setCommunicationToReceive();
 	initialize_communication_timeout_timer();
-
 }
 
 /*

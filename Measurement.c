@@ -8,7 +8,7 @@ void performeMeasurements(uint8_t *);
 void initAdc0(void){
 	/* Initilize ADC module timer*/
 	if(SAMPLE_DELAY > 0){
-		initialize_timer4_for_measurement_delays(SAMPLE_DELAY);
+		initialize_measurement_delay_timer(SAMPLE_DELAY);
 	}
 
 	/*ADC Module Initialization*/
@@ -114,7 +114,7 @@ void performeMeasurements(uint8_t results[]){
 	/*	Must be able to set "internval" or sample rate. -> Porbably set in ARM_measurement_unit.h file.*/
 	while (SAMPLE_COUNT > counter){
 		if(SAMPLE_DELAY > 0){
-			delay_timer4_for_measurement();
+			measurement_delay();
 		}
 		results[counter] = initAdc0GetResults();
 		counter++;

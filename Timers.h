@@ -19,8 +19,8 @@ void enabale_communication_timeout_timer(void);
 void disabale_communication_timeout_timer(void);
 void reset_communication_timeout_timer(void);
 int get_communication_timeout_flag(void);
-void initialize_timer4_for_measurement_delays(int);
-void delay_timer4_for_measurement(void);
+void initialize_measurement_delay_timer(int);
+void measurement_delay(void);
 void initialize_delay_timer(void);
 void delay_timer(int);
 

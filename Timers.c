@@ -74,7 +74,7 @@ void initialize_communication_timeout_timer(void){
 	NVIC->ISER[1] |= (1<<3);
 }
 
-void initialize_timer4_for_measurement_delays(int delay){
+void initialize_measurement_delay_timer(int delay){
 	//Enable timer.
 	SYSCTL->RCGCTIMER |= (1<<4);
 	//GPTM register
@@ -158,7 +158,7 @@ int get_communication_timeout_flag(void){
 	return (TIMER3->RIS & 0x00000001);
 }
 
-void delay_timer4_for_measurement(void){
+void measurement_delay(void){
 	TIMER4->ICR |= (1<<0);
 	while(1){
 		//check if counted down

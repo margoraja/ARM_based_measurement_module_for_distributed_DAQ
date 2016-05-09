@@ -45,9 +45,7 @@ void waitNextAction(){
 	while (1){
 		// Read new pacakge, where first byte is ID or GLOBAL_ID
 		readPackage(package);
-		/*if (!PRINT_DEBUG){
-			writeCharPackageOut(package, 1);
-		}*/
+
 		// Byte did not contain ID.
 		if (package[0] == ID){
 			switch(package[1]){
