@@ -1,32 +1,32 @@
 ******************************************************************************
                   TI ARM Linker PC v5.2.5                      
 ******************************************************************************
->> Linked Tue May 10 00:49:18 2016
+>> Linked Wed May 18 01:11:27 2016
 
 OUTPUT FILE NAME:   <ARM_Measurement_unit.out>
-ENTRY POINT SYMBOL: "_c_int00"  address: 00001159
+ENTRY POINT SYMBOL: "_c_int00"  address: 00001299
 
 
 MEMORY CONFIGURATION
 
          name            origin    length      used     unused   attr    fill
 ----------------------  --------  ---------  --------  --------  ----  --------
-  FLASH                 00000000   00040000  000012cc  0003ed34  R  X
-  SRAM                  20000000   00008000  00004098  00003f68  RW X
+  FLASH                 00000000   00040000  00001470  0003eb90  R  X
+  SRAM                  20000000   00008000  00000600  00007a00  RW X
 
 
 SEGMENT ALLOCATION MAP
 
 run origin  load origin   length   init length attrs members
 ----------  ----------- ---------- ----------- ----- -------
-00000000    00000000    000012d0   000012d0    r-x
+00000000    00000000    00001470   00001470    r-x
   00000000    00000000    0000026c   0000026c    r-- .intvecs
-  0000026c    0000026c    00001028   00001028    r-x .text
-  00001298    00001298    00000038   00000038    r-- .cinit
-20000000    20000000    00004098   00000000    rw-
-  20000000    20000000    00003e94   00000000    rw- .data
-  20003e94    20003e94    00000200   00000000    rw- .stack
-  20004094    20004094    00000004   00000000    rw- .bss
+  0000026c    0000026c    000011cc   000011cc    r-x .text
+  00001438    00001438    00000038   00000038    r-- .cinit
+20000000    20000000    00000600   00000000    rw-
+  20000000    20000000    000003fc   00000000    rw- .data
+  200003fc    200003fc    00000200   00000000    rw- .stack
+  200005fc    200005fc    00000004   00000000    rw- .bss
 
 
 SECTION ALLOCATION MAP
@@ -37,70 +37,74 @@ section   page    origin      length       input sections
 .intvecs   0    00000000    0000026c     
                   00000000    0000026c     tm4c123gh6pm_startup_ccs.obj (.intvecs)
 
-.text      0    0000026c    00001028     
-                  0000026c    00000498     Communication.obj (.text)
-                  00000704    0000033c     Timers.obj (.text)
-                  00000a40    000001ec     Measurement.obj (.text)
-                  00000c2c    0000013c     Utils.obj (.text)
-                  00000d68    00000138     main.obj (.text)
-                  00000ea0    000000ca     CRC.obj (.text)
-                  00000f6a    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.obj (.text)
-                  00001006    0000007a                                   : memset_t2.obj (.text)
-                  00001080    0000006c                                   : autoinit.obj (.text)
-                  000010ec    0000006a                                   : copy_decompress_rle.obj (.text)
-                  00001156    00000002     --HOLE-- [fill = 0]
-                  00001158    00000050                                   : boot.obj (.text)
-                  000011a8    0000004c                                   : cpy_tbl.obj (.text)
-                  000011f4    00000044                                   : exit.obj (.text)
-                  00001238    00000018                                   : args_main.obj (.text)
-                  00001250    00000014                                   : _lock.obj (.text)
-                  00001264    0000000e                                   : copy_decompress_none.obj (.text:decompress:none)
-                  00001272    0000000c                                   : copy_zero_init.obj (.text:decompress:ZI)
-                  0000127e    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
-                  0000128a    00000006     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_rle.obj (.text:decompress:rle24)
-                  00001290    00000004                                   : pre_init.obj (.text)
+.text      0    0000026c    000011cc     
+                  0000026c    000004f0     Communication.obj (.text)
+                  0000075c    000001f4     Measurement.obj (.text)
+                  00000950    000001b8     Timers.obj (.text)
+                  00000b08    000001b0     Utils.obj (.text)
+                  00000cb8    0000016c     main.obj (.text)
+                  00000e24    000000fc     rtsv7M4_T_le_v4SPD16_eabi.lib : fd_mul_t2.obj (.text)
+                  00000f20    000000d0     SignalGenerator.obj (.text)
+                  00000ff0    000000ba     CRC.obj (.text)
+                  000010aa    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.obj (.text)
+                  00001146    0000007a                                   : memset_t2.obj (.text)
+                  000011c0    0000006c                                   : autoinit.obj (.text)
+                  0000122c    0000006a                                   : copy_decompress_rle.obj (.text)
+                  00001296    00000002     --HOLE-- [fill = 0]
+                  00001298    00000050                                   : boot.obj (.text)
+                  000012e8    0000004c                                   : cpy_tbl.obj (.text)
+                  00001334    00000044                                   : exit.obj (.text)
+                  00001378    00000044                                   : fd_tou_t2.obj (.text)
+                  000013bc    00000020                                   : u_tofd_t2.obj (.text)
+                  000013dc    00000018                                   : args_main.obj (.text)
+                  000013f4    00000014                                   : _lock.obj (.text)
+                  00001408    0000000e                                   : copy_decompress_none.obj (.text:decompress:none)
+                  00001416    0000000c                                   : copy_zero_init.obj (.text:decompress:ZI)
+                  00001422    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
+                  0000142e    00000006     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_rle.obj (.text:decompress:rle24)
+                  00001434    00000004                                   : pre_init.obj (.text)
 
-.cinit     0    00001298    00000038     
-                  00001298    00000014     (.cinit..data.load) [load image, compression = rle]
-                  000012ac    0000000c     (__TI_handler_table)
-                  000012b8    00000008     (.cinit..bss.load) [load image, compression = zero_init]
-                  000012c0    00000010     (__TI_cinit_table)
+.cinit     0    00001438    00000038     
+                  00001438    00000014     (.cinit..data.load) [load image, compression = rle]
+                  0000144c    0000000c     (__TI_handler_table)
+                  00001458    00000008     (.cinit..bss.load) [load image, compression = zero_init]
+                  00001460    00000010     (__TI_cinit_table)
 
 .init_array 
 *          0    00000000    00000000     UNINITIALIZED
 
-.data      0    20000000    00003e94     UNINITIALIZED
-                  20000000    00003e80     main.obj (.data:measurement_results)
-                  20003e80    00000008     rtsv7M4_T_le_v4SPD16_eabi.lib : _lock.obj (.data)
-                  20003e88    00000008                                   : exit.obj (.data)
-                  20003e90    00000004                                   : stkdepth_vars.obj (.data)
+.data      0    20000000    000003fc     UNINITIALIZED
+                  20000000    000003e8     main.obj (.data:measurement_results)
+                  200003e8    00000008     rtsv7M4_T_le_v4SPD16_eabi.lib : _lock.obj (.data)
+                  200003f0    00000008                                   : exit.obj (.data)
+                  200003f8    00000004                                   : stkdepth_vars.obj (.data)
 
 .TI.persistent 
 *          0    20000000    00000000     UNINITIALIZED
 
-.stack     0    20003e94    00000200     UNINITIALIZED
-                  20003e94    00000200     --HOLE--
+.stack     0    200003fc    00000200     UNINITIALIZED
+                  200003fc    00000200     --HOLE--
 
-.bss       0    20004094    00000004     UNINITIALIZED
-                  20004094    00000001     (.common:byte_counter)
-                  20004095    00000001     (.common:communication_timeout)
-                  20004096    00000001     (.common:interrupt_occurred)
-                  20004097    00000001     (.common:state)
+.bss       0    200005fc    00000004     UNINITIALIZED
+                  200005fc    00000001     (.common:byte_counter)
+                  200005fd    00000001     (.common:communication_timeout)
+                  200005fe    00000001     (.common:interrupt_occurred)
+                  200005ff    00000001     (.common:state)
 
 .TI.noinit 
-*          0    20004094    00000000     UNINITIALIZED
+*          0    200005fc    00000000     UNINITIALIZED
 
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 000012c0 records: 2, size/record: 8, table size: 16
-	.data: load addr=00001298, load size=00000014 bytes, run addr=20000000, run size=00003e94 bytes, compression=rle
-	.bss: load addr=000012b8, load size=00000008 bytes, run addr=20004094, run size=00000004 bytes, compression=zero_init
+__TI_cinit_table @ 00001460 records: 2, size/record: 8, table size: 16
+	.data: load addr=00001438, load size=00000014 bytes, run addr=20000000, run size=000003fc bytes, compression=rle
+	.bss: load addr=00001458, load size=00000008 bytes, run addr=200005fc, run size=00000004 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 000012ac records: 3, size/record: 4, table size: 12
+__TI_handler_table @ 0000144c records: 3, size/record: 4, table size: 12
 	index: 0, handler: __TI_decompress_rle24
 	index: 1, handler: __TI_decompress_none
 	index: 2, handler: __TI_zero_init
@@ -110,123 +114,121 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 
 address   name                                  
 -------   ----                                  
-000011f5  C$$EXIT                               
-0000127f  ResetISR                              
+00001335  C$$EXIT                               
+00000c47  GetBit                                
+00000b33  LedOff                                
+00001423  ResetISR                              
 UNDEFED   SHT$$INIT_ARRAY$$Base                 
 UNDEFED   SHT$$INIT_ARRAY$$Limit                
-20004094  __STACK_END                           
+00000c67  SetBit                                
+200005fc  __STACK_END                           
 00000200  __STACK_SIZE                          
-20004094  __STACK_TOP                           
-000012c0  __TI_CINIT_Base                       
-000012d0  __TI_CINIT_Limit                      
-000012ac  __TI_Handler_Table_Base               
-000012b8  __TI_Handler_Table_Limit              
-00001081  __TI_auto_init                        
-20003e88  __TI_cleanup_ptr                      
-00001265  __TI_decompress_none                  
-0000128b  __TI_decompress_rle24                 
-20003e8c  __TI_dtors_ptr                        
+200005fc  __STACK_TOP                           
+00001460  __TI_CINIT_Base                       
+00001470  __TI_CINIT_Limit                      
+0000144c  __TI_Handler_Table_Base               
+00001458  __TI_Handler_Table_Limit              
+000011c1  __TI_auto_init                        
+200003f0  __TI_cleanup_ptr                      
+00001409  __TI_decompress_none                  
+0000142f  __TI_decompress_rle24                 
+200003f4  __TI_dtors_ptr                        
 00000000  __TI_static_base__                    
-00001273  __TI_zero_init                        
-00001007  __aeabi_memclr                        
-00001007  __aeabi_memclr4                       
-00001007  __aeabi_memclr8                       
-00000f6b  __aeabi_memcpy                        
-00000f6b  __aeabi_memcpy4                       
-00000f6b  __aeabi_memcpy8                       
-00001009  __aeabi_memset                        
-00001009  __aeabi_memset4                       
-00001009  __aeabi_memset8                       
+00001417  __TI_zero_init                        
+00001379  __aeabi_d2uiz                         
+00000e25  __aeabi_dmul                          
+00001147  __aeabi_memclr                        
+00001147  __aeabi_memclr4                       
+00001147  __aeabi_memclr8                       
+000010ab  __aeabi_memcpy                        
+000010ab  __aeabi_memcpy4                       
+000010ab  __aeabi_memcpy8                       
+00001149  __aeabi_memset                        
+00001149  __aeabi_memset4                       
+00001149  __aeabi_memset8                       
+000013bd  __aeabi_ui2d                          
 ffffffff  __binit__                             
 ffffffff  __c_args__                            
-20003e94  __stack                               
-0000043b  __writeCharByteOut                    
-00000457  __writeIntByteOut                     
-00001239  _args_main                            
-00001159  _c_int00                              
-00000ee5  _calculate_8bit_crc                   
-20003e80  _lock                                 
-0000125f  _nop                                  
-00001257  _register_lock                        
-00001251  _register_unlock                      
-00001291  _system_pre_init                      
-20003e84  _unlock                               
-000011f9  abort                                 
+200003fc  __stack                               
+00000497  __writeCharByteOut                    
+000004b3  __writeIntByteOut                     
+000013dd  _args_main                            
+00001299  _c_int00                              
+00001035  _calculate_8bit_crc                   
+200003e8  _lock                                 
+00001403  _nop                                  
+000013fb  _register_lock                        
+000013f5  _register_unlock                      
+00001435  _system_pre_init                      
+200003ec  _unlock                               
+00001339  abort                                 
 ffffffff  binit                                 
-20004094  byte_counter                          
-00000ea1  calculate_CRC                         
-00000f51  checkCrcIsOk                          
-00000d01  clearInvalidPackageBit                
-00000ce5  clearMeasurementsResultsPresentBit    
-00000cf3  clearMeasurementsSentBit              
-00000cdb  clearReadyToWorkBit                   
-00000d0b  clearStateBit                         
-00000d8b  communicationTimeout                  
-20004095  communication_timeout                 
-000011a9  copy_in                               
-00000635  debug_writeByteInBinary               
-0000068b  debug_writePackageBytesInBinary       
-000005dd  debug_writeStringOut                  
-0000096d  delay_counting                        
-00000937  delay_timer                           
-000008a3  delay_timer0                          
-000008c1  delay_timer1                          
-000008d7  delay_timer2                          
-00000903  disabale_communication_timeout_timer  
-000008ed  enabale_communication_timeout_timer   
-00001201  exit                                  
+00000b09  blueLedOn                             
+200005fc  byte_counter                          
+00000ff1  calculate_CRC                         
+000010a1  checkCrcIsOk                          
+00000c0f  clearInvalidPackageBit                
+00000beb  clearMeasurementsResultsPresentBit    
+00000bfd  clearMeasurementsSentBit              
+00000bdd  clearReadyToWorkBit                   
+00000ce1  communicationTimeoutInterupHandler    
+200005fd  communication_timeout                 
+000012e9  copy_in                               
+0000068d  debug_writeByteInBinary               
+000006e3  debug_writePackageBytesInBinary       
+00000641  debug_writeStringOut                  
+0000097f  delay_timer                           
+00000951  delay_timer_init                      
+00000a6f  disabale_communication_timeout_timer  
+00000fa1  disablePWM                            
+00000a59  enabale_communication_timeout_timer   
+00000f93  enablePWM                             
+00001341  exit                                  
 00000000  g_pfnVectors                          
-00000917  get_communication_timeout_flag        
-00000abf  inintSyncCableInput                   
-00000a41  initAdc0                              
-00000b39  initAdc0GetResults                    
-00000d35  initIntOccurredValue                  
-00000d27  initState                             
-00000c71  initializeLEDs                        
-000002b5  initializeRS485Controller             
-000002f7  initializeUART5                       
-000007dd  initialize_communication_timeout_timer
-00000867  initialize_delay_timer                
-00000823  initialize_measurement_delay_timer    
-00000705  initialize_timer0                     
-0000074d  initialize_timer1                     
-00000795  initialize_timer2                     
-20004096  interrupt_occurred                    
-00000e5d  main                                  
-20003e90  main_func_sp                          
-00000921  measurement_delay                     
-00000b91  measurement_measure                   
+00000a83  get_communication_timeout_flag        
+00000b17  greenLedOn                            
+000007fd  inintSyncCableInput                   
+0000075d  initAdc0                              
+0000086f  initAdc0GetResults                    
+00000c2b  initIntOccurredValue                  
+00000c1d  initState                             
+00000b77  initializeLEDs                        
+00000f21  initializePWM                         
+000002dd  initializeRS485Controller             
+0000031d  initializeUART5                       
+000009cf  initialize_communication_timeout_timer
+00000a15  initialize_measurement_delay_timer    
+200005fe  interrupt_occurred                    
+00000ddd  main                                  
+200003f8  main_func_sp                          
+00000a8d  measurement_delay                     
+000008cb  measurement_measure                   
 20000000  measurement_results                   
-00000b8f  measurement_signal_generation         
-00000bb1  measurement_work                      
-00000f6b  memcpy                                
-0000100f  memset                                
-00000b51  performeMeasurements                  
-00000367  readFirstByte                         
-00000377  readNextBytes                         
-00000395  readPackage                           
-00000d99  resetMeasurementResults               
-0000090b  reset_communication_timeout_timer     
-00000501  sendResults                           
-00000581  sendState                             
-00000c2d  setBlueLED                            
-00000291  setCommunicationToReceive             
+00000d0d  measurement_work                      
+000010ab  memcpy                                
+0000114f  memset                                
+0000088d  performeMeasurements                  
+000003b7  readFirstByte                         
+000003c7  readNextBytes                         
+000003e5  readPackage                           
+00000b25  redLedOn                              
+00000cef  resetMeasurementResults               
+00000a77  reset_communication_timeout_timer     
+00000559  sendResults                           
+000005ed  sendState                             
+000002a5  setCommunicationToReceive             
 0000026d  setCommunicationToTransmit            
-00000c35  setGreenLED                           
-00000d3d  setIntOccurredValue                   
-00000cb5  setInvalidPackageBit                  
-00000c4f  setLED                                
-00000c45  setLEDoff                             
-00000c99  setMeasurementsResultsPresentBit      
-00000ca7  setMeasurementsSentBit                
-00000c8f  setReadyToWorkBit                     
-00000c3d  setRedLED                             
-00000cbf  setStateBit                           
-20004097  state                                 
-00000d69  syncCableInterupHandler               
-00000db7  waitNextAction                        
-000004b5  writeCharPackageOut                   
-0000046f  writeIntPackageOut                    
+00000c33  setIntOccurredValue                   
+00000bcf  setInvalidPackageBit                  
+00000b55  setLed                                
+00000bab  setMeasurementsResultsPresentBit      
+00000bbd  setMeasurementsSentBit                
+00000b9d  setReadyToWorkBit                     
+200005ff  state                                 
+00000cb9  syncCableInterupHandler               
+00000d21  waitNextAction                        
+00000511  writeCharPackageOut                   
+000004cb  writeIntPackageOut                    
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -237,118 +239,116 @@ address   name
 00000000  g_pfnVectors                          
 00000200  __STACK_SIZE                          
 0000026d  setCommunicationToTransmit            
-00000291  setCommunicationToReceive             
-000002b5  initializeRS485Controller             
-000002f7  initializeUART5                       
-00000367  readFirstByte                         
-00000377  readNextBytes                         
-00000395  readPackage                           
-0000043b  __writeCharByteOut                    
-00000457  __writeIntByteOut                     
-0000046f  writeIntPackageOut                    
-000004b5  writeCharPackageOut                   
-00000501  sendResults                           
-00000581  sendState                             
-000005dd  debug_writeStringOut                  
-00000635  debug_writeByteInBinary               
-0000068b  debug_writePackageBytesInBinary       
-00000705  initialize_timer0                     
-0000074d  initialize_timer1                     
-00000795  initialize_timer2                     
-000007dd  initialize_communication_timeout_timer
-00000823  initialize_measurement_delay_timer    
-00000867  initialize_delay_timer                
-000008a3  delay_timer0                          
-000008c1  delay_timer1                          
-000008d7  delay_timer2                          
-000008ed  enabale_communication_timeout_timer   
-00000903  disabale_communication_timeout_timer  
-0000090b  reset_communication_timeout_timer     
-00000917  get_communication_timeout_flag        
-00000921  measurement_delay                     
-00000937  delay_timer                           
-0000096d  delay_counting                        
-00000a41  initAdc0                              
-00000abf  inintSyncCableInput                   
-00000b39  initAdc0GetResults                    
-00000b51  performeMeasurements                  
-00000b8f  measurement_signal_generation         
-00000b91  measurement_measure                   
-00000bb1  measurement_work                      
-00000c2d  setBlueLED                            
-00000c35  setGreenLED                           
-00000c3d  setRedLED                             
-00000c45  setLEDoff                             
-00000c4f  setLED                                
-00000c71  initializeLEDs                        
-00000c8f  setReadyToWorkBit                     
-00000c99  setMeasurementsResultsPresentBit      
-00000ca7  setMeasurementsSentBit                
-00000cb5  setInvalidPackageBit                  
-00000cbf  setStateBit                           
-00000cdb  clearReadyToWorkBit                   
-00000ce5  clearMeasurementsResultsPresentBit    
-00000cf3  clearMeasurementsSentBit              
-00000d01  clearInvalidPackageBit                
-00000d0b  clearStateBit                         
-00000d27  initState                             
-00000d35  initIntOccurredValue                  
-00000d3d  setIntOccurredValue                   
-00000d69  syncCableInterupHandler               
-00000d8b  communicationTimeout                  
-00000d99  resetMeasurementResults               
-00000db7  waitNextAction                        
-00000e5d  main                                  
-00000ea1  calculate_CRC                         
-00000ee5  _calculate_8bit_crc                   
-00000f51  checkCrcIsOk                          
-00000f6b  __aeabi_memcpy                        
-00000f6b  __aeabi_memcpy4                       
-00000f6b  __aeabi_memcpy8                       
-00000f6b  memcpy                                
-00001007  __aeabi_memclr                        
-00001007  __aeabi_memclr4                       
-00001007  __aeabi_memclr8                       
-00001009  __aeabi_memset                        
-00001009  __aeabi_memset4                       
-00001009  __aeabi_memset8                       
-0000100f  memset                                
-00001081  __TI_auto_init                        
-00001159  _c_int00                              
-000011a9  copy_in                               
-000011f5  C$$EXIT                               
-000011f9  abort                                 
-00001201  exit                                  
-00001239  _args_main                            
-00001251  _register_unlock                      
-00001257  _register_lock                        
-0000125f  _nop                                  
-00001265  __TI_decompress_none                  
-00001273  __TI_zero_init                        
-0000127f  ResetISR                              
-0000128b  __TI_decompress_rle24                 
-00001291  _system_pre_init                      
-000012ac  __TI_Handler_Table_Base               
-000012b8  __TI_Handler_Table_Limit              
-000012c0  __TI_CINIT_Base                       
-000012d0  __TI_CINIT_Limit                      
+000002a5  setCommunicationToReceive             
+000002dd  initializeRS485Controller             
+0000031d  initializeUART5                       
+000003b7  readFirstByte                         
+000003c7  readNextBytes                         
+000003e5  readPackage                           
+00000497  __writeCharByteOut                    
+000004b3  __writeIntByteOut                     
+000004cb  writeIntPackageOut                    
+00000511  writeCharPackageOut                   
+00000559  sendResults                           
+000005ed  sendState                             
+00000641  debug_writeStringOut                  
+0000068d  debug_writeByteInBinary               
+000006e3  debug_writePackageBytesInBinary       
+0000075d  initAdc0                              
+000007fd  inintSyncCableInput                   
+0000086f  initAdc0GetResults                    
+0000088d  performeMeasurements                  
+000008cb  measurement_measure                   
+00000951  delay_timer_init                      
+0000097f  delay_timer                           
+000009cf  initialize_communication_timeout_timer
+00000a15  initialize_measurement_delay_timer    
+00000a59  enabale_communication_timeout_timer   
+00000a6f  disabale_communication_timeout_timer  
+00000a77  reset_communication_timeout_timer     
+00000a83  get_communication_timeout_flag        
+00000a8d  measurement_delay                     
+00000b09  blueLedOn                             
+00000b17  greenLedOn                            
+00000b25  redLedOn                              
+00000b33  LedOff                                
+00000b55  setLed                                
+00000b77  initializeLEDs                        
+00000b9d  setReadyToWorkBit                     
+00000bab  setMeasurementsResultsPresentBit      
+00000bbd  setMeasurementsSentBit                
+00000bcf  setInvalidPackageBit                  
+00000bdd  clearReadyToWorkBit                   
+00000beb  clearMeasurementsResultsPresentBit    
+00000bfd  clearMeasurementsSentBit              
+00000c0f  clearInvalidPackageBit                
+00000c1d  initState                             
+00000c2b  initIntOccurredValue                  
+00000c33  setIntOccurredValue                   
+00000c47  GetBit                                
+00000c67  SetBit                                
+00000cb9  syncCableInterupHandler               
+00000ce1  communicationTimeoutInterupHandler    
+00000cef  resetMeasurementResults               
+00000d0d  measurement_work                      
+00000d21  waitNextAction                        
+00000ddd  main                                  
+00000e25  __aeabi_dmul                          
+00000f21  initializePWM                         
+00000f93  enablePWM                             
+00000fa1  disablePWM                            
+00000ff1  calculate_CRC                         
+00001035  _calculate_8bit_crc                   
+000010a1  checkCrcIsOk                          
+000010ab  __aeabi_memcpy                        
+000010ab  __aeabi_memcpy4                       
+000010ab  __aeabi_memcpy8                       
+000010ab  memcpy                                
+00001147  __aeabi_memclr                        
+00001147  __aeabi_memclr4                       
+00001147  __aeabi_memclr8                       
+00001149  __aeabi_memset                        
+00001149  __aeabi_memset4                       
+00001149  __aeabi_memset8                       
+0000114f  memset                                
+000011c1  __TI_auto_init                        
+00001299  _c_int00                              
+000012e9  copy_in                               
+00001335  C$$EXIT                               
+00001339  abort                                 
+00001341  exit                                  
+00001379  __aeabi_d2uiz                         
+000013bd  __aeabi_ui2d                          
+000013dd  _args_main                            
+000013f5  _register_unlock                      
+000013fb  _register_lock                        
+00001403  _nop                                  
+00001409  __TI_decompress_none                  
+00001417  __TI_zero_init                        
+00001423  ResetISR                              
+0000142f  __TI_decompress_rle24                 
+00001435  _system_pre_init                      
+0000144c  __TI_Handler_Table_Base               
+00001458  __TI_Handler_Table_Limit              
+00001460  __TI_CINIT_Base                       
+00001470  __TI_CINIT_Limit                      
 20000000  measurement_results                   
-20003e80  _lock                                 
-20003e84  _unlock                               
-20003e88  __TI_cleanup_ptr                      
-20003e8c  __TI_dtors_ptr                        
-20003e90  main_func_sp                          
-20003e94  __stack                               
-20004094  __STACK_END                           
-20004094  __STACK_TOP                           
-20004094  byte_counter                          
-20004095  communication_timeout                 
-20004096  interrupt_occurred                    
-20004097  state                                 
+200003e8  _lock                                 
+200003ec  _unlock                               
+200003f0  __TI_cleanup_ptr                      
+200003f4  __TI_dtors_ptr                        
+200003f8  main_func_sp                          
+200003fc  __stack                               
+200005fc  __STACK_END                           
+200005fc  __STACK_TOP                           
+200005fc  byte_counter                          
+200005fd  communication_timeout                 
+200005fe  interrupt_occurred                    
+200005ff  state                                 
 ffffffff  __binit__                             
 ffffffff  __c_args__                            
 ffffffff  binit                                 
 UNDEFED   SHT$$INIT_ARRAY$$Base                 
 UNDEFED   SHT$$INIT_ARRAY$$Limit                
 
-[117 symbols]
+[115 symbols]

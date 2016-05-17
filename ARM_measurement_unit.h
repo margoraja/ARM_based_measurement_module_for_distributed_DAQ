@@ -1,12 +1,14 @@
 #ifndef ARM_MEASUREMENT_UNIT_H_
 #define ARM_MEASUREMENT_UNIT_H_
-/* ===========================================================================================================
- * ==========	Include LM4F120H5QR.h header for TM4C123GXL (TM4C123G H6PMI7) which are the same. 	==========
- * ===========================================================================================================
+/* ===========================================================================================
+ * ==========	Include LM4F230H5QR.h header which corresponds to TM4C123GH6PM MCU	==========
+ * ==========			That is used on EK-TM4C123GXL laynchpad board. 				==========
+ * ===========================================================================================
  */
-#include <LM4F120H5QR.h>
+#include <LM4F230H5QR.h>
 #include "Timers.h"
 #include "Utils.h"
+#include <string.h>
 
 /* =======================================================================
  * ==========	LED usage and feedback during device operation	==========
@@ -36,8 +38,8 @@
  * ===========================
  * IDs ised by measurement unit and global ID that is used for communication with all devices in network.
  * 	Used by controlelr only.*/
-#define ID 97
-#define GLOBAL_ID 0
+#define ID 97 //ID
+#define GLOBAL_ID 98//0
 
 /* ===================================================
  * ==========	Communication configuration	==========
@@ -48,6 +50,9 @@
  * 	115200: iBRD 8, fBRD 44*/
 #define PACKAGE_SIZE 4
 #define CRC_INCLUDED 1
+#define CRC_BYTE_COUNT 1 //Currently not supported
+#define CRC_BIT_CHECK_FOR_FLIP 0b10000000
+#define CRC_BIT_FLIP 0b00000111
 #define BAUD_RATE 115200
 #define INTEGER_BRD 8
 #define FLOAT_BRD 44
@@ -62,11 +67,12 @@
 #define NULL_BYTE 0
 #define START_WORK 97 //1
 #define START_SIGNAL 98 //2
-#define START_MEASURING 99 //3
-#define SEND_RESULTS 100 //4
-#define DELETE_RESULTS 101 //5
-#define USE_SYNC_CABLE 102 //6
-#define GET_STATE 103 //255
+#define STOP_SIGNAL 99 //3
+#define START_MEASURING 100 //4
+#define SEND_RESULTS 101 //5
+#define DELETE_RESULTS 102 //6
+#define USE_SYNC_CABLE 103 //7
+#define GET_STATE 104 //255
 // Maybe it's necessary to have "null package" for reseting communication for all devices?
 // There are issues with communication when other products in network are switching between receive and transmitting.
 
@@ -77,10 +83,23 @@
  * 	How many times measurements are done.
  * 	Limited to allocatable memory size, limit is: .
  *	1 = 62.5 nano seconds (+ Internal delay which is x ns) if core clock is 16MHz.*/
-#define SAMPLE_COUNT 16000 /* Limit is between 16-17k currently */
+#define SAMPLE_COUNT 1000 /* Limit is between 16-17k currently */
 #define SAMPLE_DELAY 1000 /* Must find out how fast it actually is capable of measuring. */
 #define OVERWRITE_OLD_RESULTS 0 /* 0 to keep old results if not sent, otherwise will overwrite, setting it to 1 may cause iterrupts to perform two measurements */
-#define START_WORK_WITH_CABLE 0 /* Expects to use physical cable for starting the measurement work. Used only once, another instance must be enabled via communication or reset.*/
+
+/* ===========================================================
+ * ==========	Signal generator, PWM, prameters	==========
+ * ===========================================================
+ * Load: Period, calculated by: -> (System clock in kHz/ divider)/load = period in ms -> (System clock / divider)/period in ms = load
+ * Load -> length of signal being generated.
+ * Width -> how many counts out of LOAD is LOW -> 0 to PWM_LOAD.
+ */
+#define PWM_LOAD 10000
+#define PWM_WIDTH 3333
+// Uses system clock divider or not. 0 sets system clock as source clock for PWM.
+#define USE_CLOCK_DIVIDER 1
+// See page 255 on data sheet.
+#define CLOCK_DIVIDER 0
 
 /* ===============================================================================
  * ========== Data complete(whole), start, continue and end bit masks.	==========

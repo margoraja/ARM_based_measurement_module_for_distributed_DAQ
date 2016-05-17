@@ -16,29 +16,32 @@ void initAdc0(void){
 	 * 			but with the cost of slower sample rate.
 	 */
 	//1. Enable clock to ADC0
-	SYSCTL->RCGCADC |= (1<<0);
+	SetBit(&(SYSCTL->RCGCADC), 0, 1);
 
 	//2. Enable clock to appropiate GPIO, for now E and pin is 0.
-	SYSCTL->RCGCGPIO |= (1<<4);
-	GPIOE->DIR |= ~(1<<0);
+	SetBit(&(SYSCTL->RCGCGPIO), 4, 1);
+	SetBit(&(GPIOE->DIR), 0, 0);
 
 	//3. Analogue input pin, choose with pin is input.
-	GPIOE->AFSEL |= (1<<0);
+	SetBit(&(GPIOE->AFSEL), 0, 1);
 
 	//4. Disable digital functions to corresponding analogue input pins.
-	GPIOE->DEN |= ~(1<<0);
+	SetBit(&(GPIOE->DEN), 0, 0);
 
 	//5. Disable analogue isolation circut. Must be disabled for all input pins.
-	GPIOE->AMSEL |= (1<<0);
+	SetBit(&(GPIOE->AMSEL), 0, 1);
 
 	/*Sample Sequencer Configuration*/
 
-	/*	Ensure that the sample sequencer is disabled by clearing the corresponding ASENn bit in the
+	/*	Ensure that the sample sequencers are disabled by clearing the corresponding ASENn bit in the
 	 *		ADCACTSS register. Programming of the sample sequencers is allowed without having them
 	 *		enabled. Disabling the sequencer during programming prevents erroneous execution if a trigger
 	 *		event were to occur during the configuration process.
 	 */
-	ADC0->ACTSS |= (0<<3)|(0<<2)|(0<<1)|(0<<0);
+	SetBit(&(ADC0->ACTSS), 0, 0);
+	SetBit(&(ADC0->ACTSS), 1, 0);
+	SetBit(&(ADC0->ACTSS), 2, 0);
+	SetBit(&(ADC0->ACTSS), 3, 0);
 
 	/*	2. Configure the trigger event for the sample sequencer in the ADCEMUX register.
 	 *		Must add gpio pin and internal solution in the end.
@@ -70,40 +73,35 @@ void initAdc0(void){
 
 	/*	7. Enable the sample sequencer logic by setting the corresponding ASENn bit in the ADCACTSS register.
 	 */
-	ADC0->ACTSS |= (1<<3);
+	SetBit(&(ADC0->ACTSS), 3, 1);
 
 	// Clear flags
-	ADC0->ISC = (1<<3);
+	SetBit(&(ADC0->ISC), 3, 1);
 
 }
 
 void inintSyncCableInput(void){
-	SYSCTL->RCGCGPIO |= (1<<5);   // enable clock to PORTF
 	SYSCTL->RCGCGPIO |= (1<<3);   // enable clock to PORTD
-
-	// configure PORTF for LED output
-	GPIOF->DIR |= 0b1110;         // make PORTF3, 2, 1 output for LEDs
-	GPIOF->DEN |= 0b1110;         // make PORTF4-0 digital pins
 
 	// configure PORTD6 for falling edge trigger interrupt
 	// 0x40 -> 0100 0000
-	GPIOD->DIR |= (0<<0);        // make PORTD6 input pin
-	GPIOD->DEN |= (1<<0);         // make PORTD6 digital pin
-	GPIOD->PUR |= (1<<0);			//Pull up resistor
-	GPIOD->IS  |= (0<<0);        // make bit 4, 0 edge sensitive
-	GPIOD->IBE |= (0<<0);        // trigger is controlled by IEV
-	GPIOD->IEV |= (0<<0);        // falling edge trigger
-	GPIOD->ICR = (1<<0);         // clear any prior interrupt
-	GPIOD->IM  |= (1<<0);         // unmask interrupt
+	SetBit(&(GPIOD->DIR), 0, 0);		// make PORTD6 input pin
+	SetBit(&(GPIOD->DEN), 0, 1);		// make PORTD6 digital pin
+	SetBit(&(GPIOD->PUR), 0, 1);		// Pull up resistor
+	SetBit(&(GPIOD->IS), 0, 0);			// make bit 4, 0 edge sensitive
+	SetBit(&(GPIOD->IBE), 0, 0);		// trigger is controlled by IEV
+	SetBit(&(GPIOD->IEV), 0, 0);		// falling edge trigger
+	SetBit(&(GPIOD->ICR), 0, 1);		// clear any prior interrupt
+	SetBit(&(GPIOD->IM), 0, 1);			// unmask interrupt
 
 	// enable interrupt in NVIC and set priority to 6
-	NVIC->IP[3] |= (6<<5);       // set interrupt priority to 6
-	NVIC->ISER[0] |= (1<<3);    // enable IRQ3
+	NVIC->IP[3] |= (6<<5);       		// set interrupt priority to 6
+	SetBit(&(NVIC->ISER[0]), 3, 1);     // enable Interrupts on GPIO D
 }
 
 unsigned long initAdc0GetResults(void){
 	//Init SS3
-	ADC0->PSSI = (1<<3);
+	SetBit(&(ADC0->PSSI), 3, 1);
 	//Wait until conversion is done
 	while((ADC0->RIS & (1<<3)) == 0){};
 	//Return results from SS3 FIFO
@@ -111,7 +109,7 @@ unsigned long initAdc0GetResults(void){
 }
 
 void performeMeasurements(uint8_t results[]){
-	setBlueLED();
+	blueLedOn();
 	unsigned int counter = 0;
 	/*	Must be able to set "internval" or sample rate. -> Porbably set in ARM_measurement_unit.h file.*/
 	while (SAMPLE_COUNT > counter){
@@ -123,20 +121,11 @@ void performeMeasurements(uint8_t results[]){
 	}
 	setMeasurementsResultsPresentBit();
 	clearMeasurementsSentBit();
-	setLED();
-}
-
-void measurement_signal_generation(void){
-	;
+	setLed();
 }
 
 void measurement_measure(uint8_t measurement_results[]){
 	if ((GET_MEASUREMENTS_SENT_BIT == 1) || OVERWRITE_OLD_RESULTS || (GET_MEASUREMENTS_PRESENT_BIT == 0)){
 		performeMeasurements(measurement_results);
 	}
-}
-
-void measurement_work(uint8_t measurement_results[]){
-	measurement_signal_generation();
-	measurement_measure(measurement_results);
 }

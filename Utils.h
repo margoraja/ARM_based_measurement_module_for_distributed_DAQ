@@ -2,11 +2,11 @@
 #define UTILS_H_
 
 void initializeLEDs(void);
-void setBlueLED(void);
-void setGreenLED(void);
-void setRedLED(void);
-void setLEDoff(void);
-void setLED(void);
+void blueLedOn(void);
+void greenLedOn(void);
+void redLedOn(void);
+void LedOff(void);
+void setLed(void);
 
 void initIntOccurredValue(void);
 void setIntOccurredValue(uint8_t);
@@ -17,6 +17,9 @@ void setReadyToWorkBit(void);
 void setMeasurementsResultsPresentBit(void);
 void setMeasurementsSentBit(void);
 void setInvalidPackageBit(void);
+
+uint8_t GetBit(volatile uint32_t, uint8_t);
+void SetBit(volatile uint32_t*, uint8_t, uint8_t);
 
 void clearReadyToWorkBit(void);
 void clearMeasurementsResultsPresentBit(void);

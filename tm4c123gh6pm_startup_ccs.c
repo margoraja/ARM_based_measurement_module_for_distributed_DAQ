@@ -49,7 +49,7 @@ extern void _c_int00(void);
 //*****************************************************************************
 extern uint32_t __STACK_TOP;
 extern void syncCableInterupHandler(void);
-extern void communicationTimeout(void);
+extern void communicationTimeoutInterupHandler(void);
 
 //*****************************************************************************
 //
@@ -88,7 +88,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
-	syncCableInterupHandler,                      // GPIO Port D
+	syncCableInterupHandler,                // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E
     IntDefaultHandler,                      // UART0 Rx and Tx
     IntDefaultHandler,                      // UART1 Rx and Tx
@@ -120,7 +120,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // GPIO Port H
     IntDefaultHandler,                      // UART2 Rx and Tx
     IntDefaultHandler,                      // SSI1 Rx and Tx
-	communicationTimeout,                      // Timer 3 subtimer A
+	communicationTimeoutInterupHandler,                   // Timer 3 subtimer A
     IntDefaultHandler,                      // Timer 3 subtimer B
     IntDefaultHandler,                      // I2C1 Master and Slave
     IntDefaultHandler,                      // Quadrature Encoder 1

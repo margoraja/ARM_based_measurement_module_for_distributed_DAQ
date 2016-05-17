@@ -11,10 +11,11 @@
 #include "ARM_measurement_unit.h"
 #include "Communication.h"
 #include "Measurement.h"
-#include <string.h>
+#include "SignalGenerator.h"
 
 void waitNextAction(void);
 void resetMeasurementResults(void);
+void measurement_work(uint8_t *);
 
 extern uint8_t measurement_results[SAMPLE_COUNT] = {0};
 
@@ -25,9 +26,10 @@ void syncCableInterupHandler(void){
 	setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
 	//Perform measurement work
 	measurement_work(measurement_results);
+	GPIOD->ICR = (1<<0);
 }
 
-void communicationTimeout(void){
+void communicationTimeoutInterupHandler(void){
 	TIMER3->ICR = (1<<0);
 	communication_timeout = 1;
 }
@@ -38,6 +40,12 @@ void resetMeasurementResults(void){
 		memset(measurement_results, 0, SAMPLE_COUNT * sizeof(uint8_t));
 		clearMeasurementsResultsPresentBit();
 	}
+}
+
+void measurement_work(uint8_t measurement_results[]){
+	//enablePWM();
+	measurement_measure(measurement_results);
+	//disablePWM();
 }
 
 void waitNextAction(){
@@ -61,7 +69,11 @@ void waitNextAction(){
 
 				case START_SIGNAL:
 					//Start signal generation.
-					measurement_signal_generation();
+					enablePWM();
+					break;
+
+				case STOP_SIGNAL:
+					disablePWM();
 					break;
 
 				case START_WORK:
@@ -92,7 +104,11 @@ void waitNextAction(){
 
 				case START_SIGNAL:
 					//Start signal generation.
-					measurement_signal_generation();
+					enablePWM();
+					break;
+
+				case STOP_SIGNAL:
+					disablePWM();
 					break;
 
 				case START_WORK:
@@ -130,13 +146,13 @@ void main(void){
 	//Init LEDs for feedback.
 	initializeLEDs();
 	// Default interval is 1, when calling delay_timer, prived counter how many times to delay.
-	initialize_delay_timer();
+	delay_timer_init();
 
 	//Init UART 5 for communication.
 	initializeUART5();
 
 	//Init PWM signal generator
-	/* TODO: Implement PWM signal generator, configurable with width and duration (impulse count). */
+	initializePWM();
 
 	//Init analogue-digital-converter for measurements
 	initAdc0();
