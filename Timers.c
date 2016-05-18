@@ -1,7 +1,6 @@
 
 #include "ARM_measurement_unit.h"
 
-#define SYSTEM_CLOCK 16000000
 #define PRESCALE_VALUE 159
 
 void delay_timer_init(void){
@@ -58,6 +57,8 @@ void initialize_communication_timeout_timer(void){
 	TIMER3->TAILR = COMMUNICATION_TIMEOUT;
 	//enable interupt
 	TIMER3->IMR = (1<<0);
+	//Clear interrupt at NVIC
+	NVIC->ICPR[1] |= (1<<3);
 	//Enable interrupt on timer 3.
 	NVIC->ISER[1] |= (1<<3);
 }

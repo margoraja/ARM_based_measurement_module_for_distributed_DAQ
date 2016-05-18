@@ -21,20 +21,27 @@ void inintSyncWireInterupt(void);
 extern uint8_t measurement_results[SAMPLE_COUNT] = {0};
 
 void syncCableInterupHandler(void){
-	// clear the interrupt flag
-	GPIOD->ICR = (1<<0);
 	//Check if interrupt occurred during communication, if so, set flag up.
 	setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
-	//Perform measurement work
-	if (GET_READY_TO_WORK_BIT){
+	//Perform measurement work only if interrupt was received from PD1
+	if (GET_READY_TO_WORK_BIT && getBit(GPIOD->RIS, 1)){
 		measurementPwmAndAdc(measurement_results);
 	}
+	//Clear the interrupt flag
 	GPIOD->ICR = (1<<0);
+	//Clear any pending interrupts in register
+	NVIC->ICPR[0] |= (1<<3);
 }
 
 void communicationTimeoutInterupHandler(void){
+	//Only when timeotut was reached.
+	if (getBit(TIMER3->RIS, 0)){
+		communication_timeout = 1;
+	}
+	//Clear the interrupt flag
 	TIMER3->ICR = (1<<0);
-	communication_timeout = 1;
+	//Clear any pending interrupts in register
+	NVIC->ICPR[1] |= (1<<3);
 }
 
 void main(void){
@@ -66,6 +73,8 @@ void main(void){
 
 	//Set status to ready to work.
 	setReadyToWorkBit();
+
+	enablePWM();
 
 	//	Main program and logic
 	waitNextAction();

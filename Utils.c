@@ -49,21 +49,21 @@ void initializeLEDs(void){
 }
 
 void setReadyToWorkBit(void){
-	setBit(&state, READY_TO_WORK_BIT, 1);
+	setBitInUint8(&state, READY_TO_WORK_BIT, 1);
 }
 
 void setMeasurementsResultsPresentBit(void){
-	setBit(&state, MEASUREMENTS_PRESENT_BIT, 1);
+	setBitInUint8(&state, MEASUREMENTS_PRESENT_BIT, 1);
 	setLed();
 }
 
 void setMeasurementsSentBit(void){
-	setBit(&state, MEASUREMENTS_SENT_BIT, 1);
+	setBitInUint8(&state, MEASUREMENTS_SENT_BIT, 1);
 	setLed();
 }
 
 void setInvalidPackageBit(void){
-	setBit(&state, INVALID_PACKAGE_BIT, 1);
+	setBitInUint8(&state, INVALID_PACKAGE_BIT, 1);
 }
 /*
 void setStateBit(uint8_t bit_number){
@@ -71,21 +71,21 @@ void setStateBit(uint8_t bit_number){
 }*/
 
 void clearReadyToWorkBit(void){
-	setBit(&state, READY_TO_WORK_BIT, 0);
+	setBitInUint8(&state, READY_TO_WORK_BIT, 0);
 }
 
 void clearMeasurementsResultsPresentBit(void){
-	setBit(&state, MEASUREMENTS_PRESENT_BIT, 0);
+	setBitInUint8(&state, MEASUREMENTS_PRESENT_BIT, 0);
 	setLed();
 }
 
 void clearMeasurementsSentBit(void){
-	setBit(&state, MEASUREMENTS_SENT_BIT, 0);
+	setBitInUint8(&state, MEASUREMENTS_SENT_BIT, 0);
 	setLed();
 }
 
 void clearInvalidPackageBit(void){
-	setBit(&state, INVALID_PACKAGE_BIT, 0);
+	setBitInUint8(&state, INVALID_PACKAGE_BIT, 0);
 }
 /*
 void clearStateBit(uint8_t bit_number){
@@ -109,5 +109,9 @@ uint8_t getBit(volatile uint32_t target, uint8_t position){
 }
 
 void setBit(volatile uint32_t* target, uint8_t position, uint8_t bit){
+	bit ? ((*target) |= (0x01 << position)) : ((*target) &= ~(0x01 << position));
+}
+
+void setBitInUint8(uint8_t* target, uint8_t position, uint8_t bit){
 	bit ? ((*target) |= (0x01 << position)) : ((*target) &= ~(0x01 << position));
 }

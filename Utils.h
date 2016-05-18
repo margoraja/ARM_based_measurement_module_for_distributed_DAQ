@@ -20,6 +20,7 @@ void setInvalidPackageBit(void);
 
 uint8_t getBit(volatile uint32_t, uint8_t);
 void setBit(volatile uint32_t*, uint8_t, uint8_t);
+void setBitInUint8(uint8_t*, uint8_t, uint8_t);
 
 void clearReadyToWorkBit(void);
 void clearMeasurementsResultsPresentBit(void);
