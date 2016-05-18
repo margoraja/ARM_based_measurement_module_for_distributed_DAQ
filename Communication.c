@@ -41,10 +41,10 @@ void setCommunicationToTransmit(void){
 	 */
 	greenLedOn();
 	delay_timer(UART_SWITCHING_DELAY);
-	SetBit(&(UART5->CTL), 0, 0);
-	SetBit(&(GPIOB->DATA), 4, ~(RS485_RECEIVE));
-	SetBit(&(UART5->CTL), 0, 1);
-	SetBit(&(UART5->CTL), 8, 1);
+	UART5->CTL = 0x0;
+	setBit(&(GPIOD->DATA), 1, ~(RS485_RECEIVE));
+	setBit(&(UART5->CTL), 0, 1);
+	setBit(&(UART5->CTL), 8, 1);
 }
 
 void setCommunicationToReceive(void){
@@ -54,26 +54,26 @@ void setCommunicationToReceive(void){
 	 * 3. Enable UARt5 with receive
 	 */
 	delay_timer(UART_SWITCHING_DELAY);
-	SetBit(&(UART5->CTL), 0, 0);
-	SetBit(&(GPIOB->DATA), 4, RS485_RECEIVE);
-	SetBit(&(UART5->CTL), 0, 1);
-	SetBit(&(UART5->CTL), 9, 1);
+	UART5->CTL = 0x0;
+	setBit(&(GPIOD->DATA), 1, RS485_RECEIVE);
+	setBit(&(UART5->CTL), 0, 1);
+	setBit(&(UART5->CTL), 9, 1);
 	setLed();
 }
 
 void initializeRS485Controller(void){
 	//Enable clock to PBx GPIO block.
-	SetBit(&(SYSCTL->RCGCGPIO), 1, 1);
+	setBit(&(SYSCTL->RCGCGPIO), 3, 1);
 	//Enable PB4 port control for controlling RS485 receive and transmit.
-	SetBit(&(GPIOB->PCTL), 16, 1);
+	setBit(&(GPIOD->PCTL), 4, 1);
 	//Disable analogue mode.
-	SetBit(&(GPIOB->AMSEL), 4, 0);
+	setBit(&(GPIOD->AMSEL), 1, 0);
 	//Enable PB4 as direction output
-	SetBit(&(GPIOB->DIR), 4, 1);
+	setBit(&(GPIOD->DIR), 1, 1);
 	//Disable Alternate functions
-	SetBit(&(GPIOB->AFSEL), 4, 0);
+	setBit(&(GPIOD->AFSEL), 1, 0);
 	//Enable digital
-	SetBit(&(GPIOB->DEN), 4, 1);
+	setBit(&(GPIOD->DEN), 1, 1);
 }
 
 void initializeUART5(void){
@@ -86,18 +86,18 @@ void initializeUART5(void){
 	 *Step 1. 	Enables UART5 module, PE4-PE5. Page 344
 	 *			0 disabled, 1 enabled
 	 */
-	SetBit(&(SYSCTL->RCGCUART), 5, 1);
+	setBit(&(SYSCTL->RCGCUART), 5, 1);
 
 	/*
 	 * Step 2. 	Enables clock to appropiate GPIO. Required to set it to E, which is 0. Page 340.
 	 *			There for enable clock to GPIOE.
 	 *			0 disabled, 1 enabled
 	 */
-	SetBit(&(SYSCTL->RCGCGPIO), 4, 1);
+	setBit(&(SYSCTL->RCGCGPIO), 4, 1);
 	//Step 3. 	Enable required pins to GPIO AFSEL. Must set pins for GPIOE, required are PE4 and PE5 (4 and 5).
 	//			0 controlled by register, 1 controller by alternate hardware function.
-	SetBit(&(GPIOE->AFSEL), 4, 1);
-	SetBit(&(GPIOE->AFSEL), 5, 1);
+	setBit(&(GPIOE->AFSEL), 4, 1);
+	setBit(&(GPIOE->AFSEL), 5, 1);
 
 	/* Step 4.	Current level and/or slew rate are not required.*/
 
@@ -106,17 +106,17 @@ void initializeUART5(void){
 	 *			PMC0 starts with 0 and PMC1 stastrs with 4. There for 1 must be set into 16 (PMC4)and 20 (PMC5) locations.
 	 *			0 disabled, 1 enabled
 	 */
-	SetBit(&(GPIOE->PCTL), 16, 1);
-	SetBit(&(GPIOE->PCTL), 20, 1);
+	setBit(&(GPIOE->PCTL), 16, 1);
+	setBit(&(GPIOE->PCTL), 20, 1);
 
 	//			Since UART5 is digital signal, enable DigitalENable signals for specific PINs.
 	//			0 disabled, 1 enabled
-	SetBit(&(GPIOE->DEN), 4, 1);
-	SetBit(&(GPIOE->DEN), 5, 1);
+	setBit(&(GPIOE->DEN), 4, 1);
+	setBit(&(GPIOE->DEN), 5, 1);
 
 	//			Disabe analogue functions
-	SetBit(&(GPIOE->AMSEL), 4, 1);
-	SetBit(&(GPIOE->AMSEL), 5, 1);
+	setBit(&(GPIOE->AMSEL), 4, 1);
+	setBit(&(GPIOE->AMSEL), 5, 1);
 
 	/*		Communikation clocks, baud-rate.
 	 *		Using default clock which is 16MHz.
@@ -127,7 +127,7 @@ void initializeUART5(void){
 	 */
 
 	//Step 1.	Disable UART by clearing the UARTEN bit in the UARTCTL register
-	SetBit(&(UART5->CTL), 0, 0);
+	UART5->CTL = 0x0;
 
 	//Step 2.	Set integer portion of the baud-rate(BRD). Integer BRD = IBRD.
 	UART5->IBRD = INTEGER_BRD;
@@ -140,7 +140,7 @@ void initializeUART5(void){
 
 	//Step 5. 	Configure UART clock source.
 	//			Using system clock.
-	SetBit(&(UART5->CC), 0, 0);
+	UART5->CC = 0x0;
 
 	/*Step -.	Micro Direct Memory Access.
 	 *			Might be required for sending data to controller. Read from memory and send to controller.
@@ -189,7 +189,7 @@ void readPackage(uint8_t *package){
 		/* Reset byte counter. */
 		byte_counter = 0x0;
 		/* Reset interrupt occurred value. */
-		setIntOccurredValue(0x0);
+		initIntOccurredValue();
 		/* Reset communication timeout value. */
 		communication_timeout = 0x0;
 		/* Clear package. */

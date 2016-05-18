@@ -57,7 +57,7 @@
 #define INTEGER_BRD 8
 #define FLOAT_BRD 44
 #define RS485_RECEIVE 0 //Receive mode level. High = 1, Low = 0.
-#define UART_SWITCHING_DELAY 100000 // Is multiplied by 10. 1.6M is ~1 second; 0.4M is ~1/4 of second; 0.1M is ~1/16 of second.
+#define UART_SWITCHING_DELAY 10 // Uart switching delay in milliseconds
 #define COMMUNICATION_TIMEOUT 16000000 //For discarding incomplete packages.
 
 /* ===================================================================
@@ -92,14 +92,13 @@
  * ===========================================================
  * Load: Period, calculated by: -> (System clock in kHz/ divider)/load = period in ms -> (System clock / divider)/period in ms = load
  * Load -> length of signal being generated.
- * Width -> how many counts out of LOAD is LOW -> 0 to PWM_LOAD.
- */
+ * Width -> how many counts out of LOAD is LOW -> 0 to PWM_LOAD.*/
 #define PWM_LOAD 10000
 #define PWM_WIDTH 3333
 // Uses system clock divider or not. 0 sets system clock as source clock for PWM.
 #define USE_CLOCK_DIVIDER 1
 // See page 255 on data sheet.
-#define CLOCK_DIVIDER 0
+#define CLOCK_DIVIDER 7
 
 /* ===============================================================================
  * ========== Data complete(whole), start, continue and end bit masks.	==========
@@ -117,8 +116,7 @@
  *
  * WARNING!
  * Device will send more results out in various stats when it's not normally expected!
- * Send one package (4 bytes) at the time to device.
- */
+ * Send one package (4 bytes) at the time to device.*/
 #define PRINT_DEBUG 0
 
 /* ===================================

@@ -14,8 +14,9 @@
 #include "SignalGenerator.h"
 
 void waitNextAction(void);
-void resetMeasurementResults(void);
-void measurement_work(uint8_t *);
+void clearMeasurementResults(void);
+void measurementPwmAndAdc(uint8_t *);
+void inintSyncWireInterupt(void);
 
 extern uint8_t measurement_results[SAMPLE_COUNT] = {0};
 
@@ -25,7 +26,9 @@ void syncCableInterupHandler(void){
 	//Check if interrupt occurred during communication, if so, set flag up.
 	setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
 	//Perform measurement work
-	measurement_work(measurement_results);
+	if (GET_READY_TO_WORK_BIT){
+		measurementPwmAndAdc(measurement_results);
+	}
 	GPIOD->ICR = (1<<0);
 }
 
@@ -34,18 +37,38 @@ void communicationTimeoutInterupHandler(void){
 	communication_timeout = 1;
 }
 
-void resetMeasurementResults(void){
-	if (GET_MEASUREMENTS_SENT_BIT){
-		//Reinit or clean measurement results
-		memset(measurement_results, 0, SAMPLE_COUNT * sizeof(uint8_t));
-		clearMeasurementsResultsPresentBit();
-	}
-}
+void main(void){
+	byte_counter = 0;
 
-void measurement_work(uint8_t measurement_results[]){
-	//enablePWM();
-	measurement_measure(measurement_results);
-	//disablePWM();
+	//Inint state
+	initState();
+
+	//Init LEDs for feedback.
+	initializeLEDs();
+
+	// Default interval is 1, when calling delay_timer, prived counter how many times to delay.
+	delay_timer_init();
+
+	//Init PWM signal generator
+	initializePWM();
+
+	//Init analogue-digital-converter for measurements
+	initAdc0();
+
+	//Init checker if interrupt occurred during communication
+	interrupt_occurred = 0;
+
+	//Init UART 5 for communication.
+	initializeUART5();
+
+	//Init syncronization cable input.
+	inintSyncWireInterupt();
+
+	//Set status to ready to work.
+	setReadyToWorkBit();
+
+	//	Main program and logic
+	waitNextAction();
 }
 
 void waitNextAction(){
@@ -78,12 +101,12 @@ void waitNextAction(){
 
 				case START_WORK:
 					//Signal generation and measureing
-					measurement_work(measurement_results);
+					measurementPwmAndAdc(measurement_results);
 					break;
 
 				case DELETE_RESULTS:
 					//Delete measurement results
-					resetMeasurementResults();
+					clearMeasurementResults();
 					break;
 
 				case GET_STATE:
@@ -113,12 +136,12 @@ void waitNextAction(){
 
 				case START_WORK:
 					//Signal generation and measureing
-					measurement_work(measurement_results);
+					measurementPwmAndAdc(measurement_results);
 					break;
 
 				case DELETE_RESULTS:
 					//Delete measurement results
-					resetMeasurementResults();
+					clearMeasurementResults();
 					break;
 
 				case SEND_RESULTS:
@@ -141,31 +164,35 @@ void waitNextAction(){
 	}
 }
 
-void main(void){
+void clearMeasurementResults(void){
+	if (GET_MEASUREMENTS_SENT_BIT){
+		//Reinit or clean measurement results
+		memset(measurement_results, 0, SAMPLE_COUNT * sizeof(uint8_t));
+		clearMeasurementsResultsPresentBit();
+	}
+}
 
-	//Init LEDs for feedback.
-	initializeLEDs();
-	// Default interval is 1, when calling delay_timer, prived counter how many times to delay.
-	delay_timer_init();
+void measurementPwmAndAdc(uint8_t measurement_results[]){
+	//enablePWM();
+	measurement_measure(measurement_results);
+	//disablePWM();
+}
 
-	//Init UART 5 for communication.
-	initializeUART5();
+void inintSyncWireInterupt(void){
+	SYSCTL->RCGCGPIO |= (1<<3);   // enable clock to PORTD
 
-	//Init PWM signal generator
-	initializePWM();
+	// configure PORTD6 for falling edge trigger interrupt
+	setBit(&(GPIOD->DIR), 0, 0);		// make PORTD6 input pin
+	setBit(&(GPIOD->DEN), 0, 1);		// make PORTD6 digital pin
+	setBit(&(GPIOD->PUR), 0, 1);		// Pull up resistor
+	setBit(&(GPIOD->IS), 0, 0);			// make bit 4, 0 edge sensitive
+	setBit(&(GPIOD->IBE), 0, 0);		// trigger is controlled by IEV
+	setBit(&(GPIOD->IEV), 0, 0);		// falling edge trigger
+	setBit(&(GPIOD->ICR), 0, 1);		// clear any prior interrupt
+	setBit(&(GPIOD->IM), 0, 1);			// unmask interrupt
 
-	//Init analogue-digital-converter for measurements
-	initAdc0();
-
-	//Init syncronization cable input.
-	inintSyncCableInput();
-
-	//Init checker if interrupt occurred during communication
-	interrupt_occurred = 0;
-
-	//Inint state
-	initState();
-
-	//	Main program and logic
-	waitNextAction();
+	// enable interrupt in NVIC and set priority to 6
+	NVIC->IP[3] |= (6<<5);       		// Set interrupt priority to 6
+	setBit(&(NVIC->ICPR[0]), 3, 1);		// Clear pending interrupts
+	setBit(&(NVIC->ISER[0]), 3, 1);     // enable Interrupts on GPIO D
 }

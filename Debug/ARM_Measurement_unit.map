@@ -1,7 +1,7 @@
 ******************************************************************************
                   TI ARM Linker PC v5.2.5                      
 ******************************************************************************
->> Linked Wed May 18 01:11:27 2016
+>> Linked Wed May 18 21:48:00 2016
 
 OUTPUT FILE NAME:   <ARM_Measurement_unit.out>
 ENTRY POINT SYMBOL: "_c_int00"  address: 00001299
@@ -38,13 +38,13 @@ section   page    origin      length       input sections
                   00000000    0000026c     tm4c123gh6pm_startup_ccs.obj (.intvecs)
 
 .text      0    0000026c    000011cc     
-                  0000026c    000004f0     Communication.obj (.text)
-                  0000075c    000001f4     Measurement.obj (.text)
-                  00000950    000001b8     Timers.obj (.text)
-                  00000b08    000001b0     Utils.obj (.text)
-                  00000cb8    0000016c     main.obj (.text)
-                  00000e24    000000fc     rtsv7M4_T_le_v4SPD16_eabi.lib : fd_mul_t2.obj (.text)
-                  00000f20    000000d0     SignalGenerator.obj (.text)
+                  0000026c    000004d8     Communication.obj (.text)
+                  00000744    00000220     main.obj (.text)
+                  00000964    000001b8     Timers.obj (.text)
+                  00000b1c    00000180     Utils.obj (.text)
+                  00000c9c    00000158     Measurement.obj (.text)
+                  00000df4    00000100     SignalGenerator.obj (.text)
+                  00000ef4    000000fc     rtsv7M4_T_le_v4SPD16_eabi.lib : fd_mul_t2.obj (.text)
                   00000ff0    000000ba     CRC.obj (.text)
                   000010aa    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.obj (.text)
                   00001146    0000007a                                   : memset_t2.obj (.text)
@@ -115,12 +115,10 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 address   name                                  
 -------   ----                                  
 00001335  C$$EXIT                               
-00000c47  GetBit                                
-00000b33  LedOff                                
+00000b35  LedOff                                
 00001423  ResetISR                              
 UNDEFED   SHT$$INIT_ARRAY$$Base                 
 UNDEFED   SHT$$INIT_ARRAY$$Limit                
-00000c67  SetBit                                
 200005fc  __STACK_END                           
 00000200  __STACK_SIZE                          
 200005fc  __STACK_TOP                           
@@ -136,7 +134,7 @@ UNDEFED   SHT$$INIT_ARRAY$$Limit
 00000000  __TI_static_base__                    
 00001417  __TI_zero_init                        
 00001379  __aeabi_d2uiz                         
-00000e25  __aeabi_dmul                          
+00000ef5  __aeabi_dmul                          
 00001147  __aeabi_memclr                        
 00001147  __aeabi_memclr4                       
 00001147  __aeabi_memclr8                       
@@ -150,8 +148,8 @@ UNDEFED   SHT$$INIT_ARRAY$$Limit
 ffffffff  __binit__                             
 ffffffff  __c_args__                            
 200003fc  __stack                               
-00000497  __writeCharByteOut                    
-000004b3  __writeIntByteOut                     
+00000481  __writeCharByteOut                    
+0000049d  __writeIntByteOut                     
 000013dd  _args_main                            
 00001299  _c_int00                              
 00001035  _calculate_8bit_crc                   
@@ -163,72 +161,74 @@ ffffffff  __c_args__
 200003ec  _unlock                               
 00001339  abort                                 
 ffffffff  binit                                 
-00000b09  blueLedOn                             
+00000b1d  blueLedOn                             
 200005fc  byte_counter                          
 00000ff1  calculate_CRC                         
 000010a1  checkCrcIsOk                          
-00000c0f  clearInvalidPackageBit                
-00000beb  clearMeasurementsResultsPresentBit    
-00000bfd  clearMeasurementsSentBit              
-00000bdd  clearReadyToWorkBit                   
-00000ce1  communicationTimeoutInterupHandler    
+00000bf7  clearInvalidPackageBit                
+00000875  clearMeasurementResults               
+00000bd3  clearMeasurementsResultsPresentBit    
+00000be5  clearMeasurementsSentBit              
+00000bc5  clearReadyToWorkBit                   
+00000777  communicationTimeoutInterupHandler    
 200005fd  communication_timeout                 
 000012e9  copy_in                               
-0000068d  debug_writeByteInBinary               
-000006e3  debug_writePackageBytesInBinary       
-00000641  debug_writeStringOut                  
-0000097f  delay_timer                           
-00000951  delay_timer_init                      
-00000a6f  disabale_communication_timeout_timer  
-00000fa1  disablePWM                            
-00000a59  enabale_communication_timeout_timer   
-00000f93  enablePWM                             
+00000675  debug_writeByteInBinary               
+000006cb  debug_writePackageBytesInBinary       
+00000621  debug_writeStringOut                  
+00000993  delay_timer                           
+00000965  delay_timer_init                      
+00000a83  disabale_communication_timeout_timer  
+00000e93  disablePWM                            
+00000a6d  enabale_communication_timeout_timer   
+00000e75  enablePWM                             
 00001341  exit                                  
 00000000  g_pfnVectors                          
-00000a83  get_communication_timeout_flag        
-00000b17  greenLedOn                            
-000007fd  inintSyncCableInput                   
-0000075d  initAdc0                              
-0000086f  initAdc0GetResults                    
-00000c2b  initIntOccurredValue                  
-00000c1d  initState                             
-00000b77  initializeLEDs                        
-00000f21  initializePWM                         
-000002dd  initializeRS485Controller             
-0000031d  initializeUART5                       
-000009cf  initialize_communication_timeout_timer
-00000a15  initialize_measurement_delay_timer    
+00000c29  getBit                                
+00000a97  get_communication_timeout_flag        
+00000b25  greenLedOn                            
+0000089f  inintSyncWireInterupt                 
+00000c9d  initAdc0                              
+00000d3d  initAdc0GetResults                    
+00000c0d  initIntOccurredValue                  
+00000c05  initState                             
+00000b5f  initializeLEDs                        
+00000df5  initializePWM                         
+000002d1  initializeRS485Controller             
+00000311  initializeUART5                       
+000009e3  initialize_communication_timeout_timer
+00000a29  initialize_measurement_delay_timer    
 200005fe  interrupt_occurred                    
-00000ddd  main                                  
+00000785  main                                  
 200003f8  main_func_sp                          
-00000a8d  measurement_delay                     
-000008cb  measurement_measure                   
+00000893  measurementPwmAndAdc                  
+00000aa1  measurement_delay                     
+00000d99  measurement_measure                   
 20000000  measurement_results                   
-00000d0d  measurement_work                      
 000010ab  memcpy                                
 0000114f  memset                                
-0000088d  performeMeasurements                  
-000003b7  readFirstByte                         
-000003c7  readNextBytes                         
-000003e5  readPackage                           
-00000b25  redLedOn                              
-00000cef  resetMeasurementResults               
-00000a77  reset_communication_timeout_timer     
-00000559  sendResults                           
-000005ed  sendState                             
-000002a5  setCommunicationToReceive             
+00000d5b  performeMeasurements                  
+000003a3  readFirstByte                         
+000003b3  readNextBytes                         
+000003d1  readPackage                           
+00000b2d  redLedOn                              
+00000a8b  reset_communication_timeout_timer     
+00000541  sendResults                           
+000005d5  sendState                             
+00000c49  setBit                                
+0000029f  setCommunicationToReceive             
 0000026d  setCommunicationToTransmit            
-00000c33  setIntOccurredValue                   
-00000bcf  setInvalidPackageBit                  
-00000b55  setLed                                
-00000bab  setMeasurementsResultsPresentBit      
-00000bbd  setMeasurementsSentBit                
-00000b9d  setReadyToWorkBit                     
+00000c15  setIntOccurredValue                   
+00000bb7  setInvalidPackageBit                  
+00000b3d  setLed                                
+00000b93  setMeasurementsResultsPresentBit      
+00000ba5  setMeasurementsSentBit                
+00000b85  setReadyToWorkBit                     
 200005ff  state                                 
-00000cb9  syncCableInterupHandler               
-00000d21  waitNextAction                        
-00000511  writeCharPackageOut                   
-000004cb  writeIntPackageOut                    
+00000745  syncCableInterupHandler               
+000007b9  waitNextAction                        
+000004fb  writeCharPackageOut                   
+000004b5  writeIntPackageOut                    
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -239,64 +239,64 @@ address   name
 00000000  g_pfnVectors                          
 00000200  __STACK_SIZE                          
 0000026d  setCommunicationToTransmit            
-000002a5  setCommunicationToReceive             
-000002dd  initializeRS485Controller             
-0000031d  initializeUART5                       
-000003b7  readFirstByte                         
-000003c7  readNextBytes                         
-000003e5  readPackage                           
-00000497  __writeCharByteOut                    
-000004b3  __writeIntByteOut                     
-000004cb  writeIntPackageOut                    
-00000511  writeCharPackageOut                   
-00000559  sendResults                           
-000005ed  sendState                             
-00000641  debug_writeStringOut                  
-0000068d  debug_writeByteInBinary               
-000006e3  debug_writePackageBytesInBinary       
-0000075d  initAdc0                              
-000007fd  inintSyncCableInput                   
-0000086f  initAdc0GetResults                    
-0000088d  performeMeasurements                  
-000008cb  measurement_measure                   
-00000951  delay_timer_init                      
-0000097f  delay_timer                           
-000009cf  initialize_communication_timeout_timer
-00000a15  initialize_measurement_delay_timer    
-00000a59  enabale_communication_timeout_timer   
-00000a6f  disabale_communication_timeout_timer  
-00000a77  reset_communication_timeout_timer     
-00000a83  get_communication_timeout_flag        
-00000a8d  measurement_delay                     
-00000b09  blueLedOn                             
-00000b17  greenLedOn                            
-00000b25  redLedOn                              
-00000b33  LedOff                                
-00000b55  setLed                                
-00000b77  initializeLEDs                        
-00000b9d  setReadyToWorkBit                     
-00000bab  setMeasurementsResultsPresentBit      
-00000bbd  setMeasurementsSentBit                
-00000bcf  setInvalidPackageBit                  
-00000bdd  clearReadyToWorkBit                   
-00000beb  clearMeasurementsResultsPresentBit    
-00000bfd  clearMeasurementsSentBit              
-00000c0f  clearInvalidPackageBit                
-00000c1d  initState                             
-00000c2b  initIntOccurredValue                  
-00000c33  setIntOccurredValue                   
-00000c47  GetBit                                
-00000c67  SetBit                                
-00000cb9  syncCableInterupHandler               
-00000ce1  communicationTimeoutInterupHandler    
-00000cef  resetMeasurementResults               
-00000d0d  measurement_work                      
-00000d21  waitNextAction                        
-00000ddd  main                                  
-00000e25  __aeabi_dmul                          
-00000f21  initializePWM                         
-00000f93  enablePWM                             
-00000fa1  disablePWM                            
+0000029f  setCommunicationToReceive             
+000002d1  initializeRS485Controller             
+00000311  initializeUART5                       
+000003a3  readFirstByte                         
+000003b3  readNextBytes                         
+000003d1  readPackage                           
+00000481  __writeCharByteOut                    
+0000049d  __writeIntByteOut                     
+000004b5  writeIntPackageOut                    
+000004fb  writeCharPackageOut                   
+00000541  sendResults                           
+000005d5  sendState                             
+00000621  debug_writeStringOut                  
+00000675  debug_writeByteInBinary               
+000006cb  debug_writePackageBytesInBinary       
+00000745  syncCableInterupHandler               
+00000777  communicationTimeoutInterupHandler    
+00000785  main                                  
+000007b9  waitNextAction                        
+00000875  clearMeasurementResults               
+00000893  measurementPwmAndAdc                  
+0000089f  inintSyncWireInterupt                 
+00000965  delay_timer_init                      
+00000993  delay_timer                           
+000009e3  initialize_communication_timeout_timer
+00000a29  initialize_measurement_delay_timer    
+00000a6d  enabale_communication_timeout_timer   
+00000a83  disabale_communication_timeout_timer  
+00000a8b  reset_communication_timeout_timer     
+00000a97  get_communication_timeout_flag        
+00000aa1  measurement_delay                     
+00000b1d  blueLedOn                             
+00000b25  greenLedOn                            
+00000b2d  redLedOn                              
+00000b35  LedOff                                
+00000b3d  setLed                                
+00000b5f  initializeLEDs                        
+00000b85  setReadyToWorkBit                     
+00000b93  setMeasurementsResultsPresentBit      
+00000ba5  setMeasurementsSentBit                
+00000bb7  setInvalidPackageBit                  
+00000bc5  clearReadyToWorkBit                   
+00000bd3  clearMeasurementsResultsPresentBit    
+00000be5  clearMeasurementsSentBit              
+00000bf7  clearInvalidPackageBit                
+00000c05  initState                             
+00000c0d  initIntOccurredValue                  
+00000c15  setIntOccurredValue                   
+00000c29  getBit                                
+00000c49  setBit                                
+00000c9d  initAdc0                              
+00000d3d  initAdc0GetResults                    
+00000d5b  performeMeasurements                  
+00000d99  measurement_measure                   
+00000df5  initializePWM                         
+00000e75  enablePWM                             
+00000e93  disablePWM                            
+00000ef5  __aeabi_dmul                          
 00000ff1  calculate_CRC                         
 00001035  _calculate_8bit_crc                   
 000010a1  checkCrcIsOk                          

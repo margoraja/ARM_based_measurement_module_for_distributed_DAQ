@@ -6,16 +6,16 @@
 
 void delay_timer_init(void){
 	// Enable GPTM timer 0
-	SetBit(&(SYSCTL->RCGCTIMER), 0, 1 );
+	setBit(&(SYSCTL->RCGCTIMER), 0, 1 );
 
 	// Disable timer A for configuration
-	SetBit(&(TIMER0->CTL), 0, 0 );
+	setBit(&(TIMER0->CTL), 0, 0 );
 
 	// Configure timer0 to be two independent 16 bit timers (required for prescaler)
 	TIMER0->CFG = 0x4;
 
 	// Set timer counting direction
-	SetBit(&(TIMER0->TAMR), 0, 1 );
+	setBit(&(TIMER0->TAMR), 0, 1 );
 
 	// Set prescale value
 	TIMER0->TAPR = PRESCALE_VALUE;
@@ -30,13 +30,13 @@ void delay_timer(uint16_t delayInMilliSeconds){
 	TIMER0->TAILR = counterReloadValue;
 
 	// Enable TimerA
-	SetBit(&(TIMER0->CTL), 0, 1 );
+	setBit(&(TIMER0->CTL), 0, 1 );
 
 	// Loops until timer event has elapsed
 	while (1)
 	{
 		// Check to see if timer event has elapsed
-		if (GetBit(TIMER0->CTL, 0 ) == 0)
+		if (getBit(TIMER0->CTL, 0 ) == 0)
 		{
 			break;
 		}

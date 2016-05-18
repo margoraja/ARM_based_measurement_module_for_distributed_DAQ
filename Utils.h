@@ -18,8 +18,8 @@ void setMeasurementsResultsPresentBit(void);
 void setMeasurementsSentBit(void);
 void setInvalidPackageBit(void);
 
-uint8_t GetBit(volatile uint32_t, uint8_t);
-void SetBit(volatile uint32_t*, uint8_t, uint8_t);
+uint8_t getBit(volatile uint32_t, uint8_t);
+void setBit(volatile uint32_t*, uint8_t, uint8_t);
 
 void clearReadyToWorkBit(void);
 void clearMeasurementsResultsPresentBit(void);
