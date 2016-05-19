@@ -77,8 +77,7 @@
 #define START_MEASURING 100 //4
 #define SEND_RESULTS 101 //5
 #define DELETE_RESULTS 102 //6
-#define USE_SYNC_CABLE 103 //7
-#define GET_STATE 104 //255
+#define GET_STATE 103 //255
 // Maybe it's necessary to have "null package" for reseting communication for all devices?
 // There are issues with communication when other products in network are switching between receive and transmitting.
 
@@ -89,8 +88,8 @@
  * 	How many times measurements are done.
  * 	Limited to allocatable memory size, limit is: .
  *	1 = 62.5 nano seconds (+ Internal delay which is x ns) if core clock is 16MHz.*/
-#define SAMPLE_COUNT 16000 /* Limit is between 16-17k currently */
-#define SAMPLE_DELAY 1000 /* Must find out how fast it actually is capable of measuring. */
+#define SAMPLE_COUNT 100 /* Limit is between 16-17k currently */
+#define SAMPLE_DELAY 10000 /* Must find out how fast it actually is capable of measuring. */
 #define OVERWRITE_OLD_RESULTS 0 /* 0 to keep old results if not sent, otherwise will overwrite, setting it to 1 may cause iterrupts to perform two measurements */
 
 /* ===========================================================

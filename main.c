@@ -23,6 +23,9 @@ void disableGpiodInterrupts(void);
 extern uint8_t measurement_results[SAMPLE_COUNT] = {0};
 
 void main(void){
+	/*
+	 * TODO: Increase system clock -> communication and PWM could benefit from this.
+	 */
 	byte_counter = 0;
 
 	//Inint state
@@ -35,7 +38,7 @@ void main(void){
 	delay_timer_init();
 
 	//Init PWM signal generator
-	//initializePWM();
+	initializePWM();
 
 	//Init analogue-digital-converter for measurements
 	initAdc0();
@@ -52,8 +55,6 @@ void main(void){
 	//Set status to ready to work.
 	setReadyToWorkBit();
 
-	//enablePWM();
-
 	//	Main program and logic
 	waitNextAction();
 }
@@ -61,10 +62,8 @@ void main(void){
 void waitNextAction(){
 	uint8_t package[PACKAGE_SIZE+1];
 	while (1){
-		enableGpiodInterrupts();
 		// Read new pacakge, where first byte is ID or GLOBAL_ID
 		readPackage(package);
-		disableGpiodInterrupts();
 
 		// Byte did not contain ID.
 		if (package[0] == ID){
@@ -76,7 +75,7 @@ void waitNextAction(){
 
 				case START_MEASURING:
 					//Start measurements.
-					measurement_measure(measurement_results);
+					performeMeasurements(measurement_results);
 					break;
 
 				case START_SIGNAL:
@@ -111,7 +110,7 @@ void waitNextAction(){
 
 				case START_MEASURING:
 					//Start measurements.
-					measurement_measure(measurement_results);
+					performeMeasurements(measurement_results);
 					break;
 
 				case START_SIGNAL:
@@ -162,39 +161,39 @@ void clearMeasurementResults(void){
 }
 
 void measurementPwmAndAdc(uint8_t measurement_results[]){
-	//enablePWM();
-	measurement_measure(measurement_results);
-	//disablePWM();
+	enablePWM();
+	performeMeasurements(measurement_results);
+	disablePWM();
 }
 
 void inintSyncWireInterupt(void){
-	SYSCTL->RCGCGPIO |= (1<<3);   // enable clock to PORTD
+	SYSCTL->RCGCGPIO |= (1<<4);   // enable clock to block E
 
-	// configure PORTD6 for falling edge trigger interrupt
-	setBit(&(GPIOD->DIR), 0, 0);		// make PORTD6 input pin
-	setBit(&(GPIOD->DEN), 0, 1);		// make PORTD6 digital pin
-	setBit(&(GPIOD->PUR), 0, 1);		// Pull up resistor
-	setBit(&(GPIOD->IS), 0, 0);			// make bit 4, 0 edge sensitive
-	setBit(&(GPIOD->IBE), 0, 0);		// trigger is controlled by IEV
-	setBit(&(GPIOD->IEV), 0, 0);		// falling edge trigger
-	setBit(&(GPIOD->ICR), 0, 1);		// clear any prior interrupt
-	setBit(&(GPIOD->IM), 0, 1);			// unmask interrupt
+	// configure Port E1 for falling edge trigger interrupt
+	setBit(&(GPIOE->DIR), 1, 0);		// make PE1 input pin
+	setBit(&(GPIOE->DEN), 1, 1);		// make PE1 digital pin
+	setBit(&(GPIOE->PUR), 1, 1);		// Pull up resistor
+	setBit(&(GPIOE->IS), 1, 0);			// make edge sensitive
+	setBit(&(GPIOE->IBE), 1, 0);		// trigger is controlled by IEV
+	setBit(&(GPIOE->IEV), 1, 1);		// falling edge trigger
+	setBit(&(GPIOE->ICR), 1, 1);		// clear any prior interrupt
+	setBit(&(GPIOE->IM), 1, 1);			// unmask interrupt
 
 	// enable interrupt in NVIC and set priority to 6
-	NVIC->IP[3] |= (6<<5);       		// Set interrupt priority to 6
-	setBit(&(NVIC->ICPR[0]), 3, 1);		// Clear pending interrupts
+	NVIC->IP[1] |= (6<<5);       		// Set interrupt priority to 6
+	setBit(&(NVIC->ICPR[0]), 4, 1);		// Clear pending interrupts
 	enableGpiodInterrupts();
 }
 
 void enableGpiodInterrupts(void){
-	if (!getBit(NVIC->ISER[0], 3)){
-		setBit(&(NVIC->ISER[0]), 3, 1);     // enable Interrupts on GPIO D
+	if (!getBit(NVIC->ISER[0], 4)){
+		setBit(&(NVIC->ISER[0]), 4, 1);     // enable Interrupts on GPIO E
 	}
 }
 
 void disableGpiodInterrupts(void){
-	if (getBit(NVIC->ISER[0], 3)){
-		setBit(&(NVIC->ISER[0]), 3, 0);     // disable Interrupts on GPIO D
+	if (getBit(NVIC->ISER[0], 4)){
+		setBit(&(NVIC->ISER[0]), 4, 0);     // disable Interrupts on GPIO E
 	}
 }
 
@@ -206,19 +205,19 @@ void communicationTimeoutInterupHandler(void){
 	//Clear the interrupt flag
 	TIMER3->ICR = (1<<0);
 	//Clear any pending interrupts in register
-	NVIC->ICPR[1] |= (1<<3);
+	setBit(&(NVIC->ICPR[1]), 3, 1);
 }
 
 void syncCableInterupHandler(void){
 	//Perform measurement work only if interrupt was received from PD1
-	if (GET_READY_TO_WORK_BIT && getBit(GPIOD->RIS, 0)){
+	if (GET_READY_TO_WORK_BIT && getBit(GPIOE->RIS, 1)){
 		//Perform measurements
 		measurementPwmAndAdc(measurement_results);
 		//Check if interrupt occurred during communication, if so, set flag up.
 		setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
 	}
 	//Clear the interrupt flag
-	GPIOD->ICR = (1<<0);
+	GPIOE->ICR = (1<<1);
 	//Clear any pending interrupts in register
-	NVIC->ICPR[0] |= (1<<3);
+	setBit(&(NVIC->ICPR[0]), 4, 1);
 }

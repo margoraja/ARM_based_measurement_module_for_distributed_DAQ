@@ -1,20 +1,20 @@
 
 #include "ARM_measurement_unit.h"
 
-void performeMeasurements(uint8_t *);
-
 void initAdc0(void){
+	/*  TODO: Implement a way to decreace ADC clock speed,
+	 * 			so that ADC produced more accurate measurements
+	 * 			but with the cost of slower sample rate.
+	 *
+	 * 	TODO: Implement interrupts as adc input ->
+	 * 			-> interrupt will cause ADC to perform measurement synced with specific input pin.
+	 */
 	/* Initilize ADC module timer*/
 	if(SAMPLE_DELAY > 0){
 		initialize_measurement_delay_timer(SAMPLE_DELAY);
 	}
 
 	/*ADC Module Initialization*/
-
-	/* TODO: Implement a way to decreace ADC clock speed,
-	 * 			so that ADC produced more accurate measurements
-	 * 			but with the cost of slower sample rate.
-	 */
 	//1. Enable clock to ADC0
 	setBit(&(SYSCTL->RCGCADC), 0, 1);
 
@@ -90,23 +90,20 @@ unsigned long initAdc0GetResults(void){
 }
 
 void performeMeasurements(uint8_t results[]){
-	blueLedOn();
-	unsigned int counter = 0;
-	/*	Must be able to set "internval" or sample rate. -> Porbably set in ARM_measurement_unit.h file.*/
-	while (SAMPLE_COUNT > counter){
-		if(SAMPLE_DELAY > 0){
-			measurement_delay();
-		}
-		results[counter] = initAdc0GetResults();
-		counter++;
-	}
-	setMeasurementsResultsPresentBit();
-	clearMeasurementsSentBit();
-	setLed();
-}
-
-void measurement_measure(uint8_t measurement_results[]){
 	if ((GET_MEASUREMENTS_SENT_BIT == 1) || OVERWRITE_OLD_RESULTS || (GET_MEASUREMENTS_PRESENT_BIT == 0)){
-		performeMeasurements(measurement_results);
+		blueLedOn();
+		unsigned int counter = 0;
+		/*	Must be able to set "internval" or sample rate. -> Porbably set in ARM_measurement_unit.h file.*/
+		while (SAMPLE_COUNT > counter){
+			if(SAMPLE_DELAY > 0){
+				measurement_delay();
+			}
+			results[counter] = initAdc0GetResults();
+			counter++;
+		}
+		setMeasurementsResultsPresentBit();
+		clearMeasurementsSentBit();
+		setLed();
+
 	}
 }

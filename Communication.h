@@ -3,8 +3,6 @@
 
 void initializeUART5(void);
 void readPackage(uint8_t *);
-void writeCharPackageOut(uint8_t *, uint8_t);
-void writeIntPackageOut(int *, uint8_t);
 void sendResults(uint8_t *);
 void sendState(void);
 

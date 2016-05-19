@@ -2,26 +2,16 @@
 #include "ARM_measurement_unit.h"
 #include "CRC.h"
 
+void initializeRS485Controller(void);
 void setCommunicationToTransmit(void);
 void setCommunicationToReceive(void);
-void initializeRS485Controller(void);
+
 uint8_t readFirstByte(void);
 uint8_t readNextBytes(void);
-void __writeCharByteOut(char);
-void __writeIntByteOut(int);
-void debug_writeStringOut(char *, uint8_t);
-void debug_writeByteInBinary(char, uint8_t);
-void debug_writePackageBytesInBinary(uint8_t [], uint8_t);
-void writeCharPackageOut(uint8_t *, uint8_t);
 
-//extern uint8_t measurement_results[SAMPLE_COUNT];
+void writePackageOut(uint8_t *, uint8_t);
+void __writeByteOut(uint8_t);
 
-/*
-void configureUART5(void);
-void readPackage(int *);
-void writePackageOut(int *);
-void sendResults(uint8_t);
-*/
 
 /*	Communication protocol uses three bytes on both ways of communication:
  * 		1: Device ID. NULL for sending to all devices.
@@ -42,7 +32,7 @@ void setCommunicationToTransmit(void){
 	greenLedOn();
 	delay_timer(UART_SWITCHING_DELAY);
 	UART5->CTL = 0x0;
-	setBit(&(GPIOD->DATA), 1, ~(RS485_RECEIVE));
+	setBit(&(GPIOB->DATA), 4, ~(RS485_RECEIVE));
 	setBit(&(UART5->CTL), 0, 1);
 	setBit(&(UART5->CTL), 8, 1);
 }
@@ -55,7 +45,7 @@ void setCommunicationToReceive(void){
 	 */
 	delay_timer(UART_SWITCHING_DELAY);
 	UART5->CTL = 0x0;
-	setBit(&(GPIOD->DATA), 1, RS485_RECEIVE);
+	setBit(&(GPIOB->DATA), 4, RS485_RECEIVE);
 	setBit(&(UART5->CTL), 0, 1);
 	setBit(&(UART5->CTL), 9, 1);
 	setLed();
@@ -63,17 +53,17 @@ void setCommunicationToReceive(void){
 
 void initializeRS485Controller(void){
 	//Enable clock to PBx GPIO block.
-	setBit(&(SYSCTL->RCGCGPIO), 3, 1);
+	setBit(&(SYSCTL->RCGCGPIO), 1, 1);
 	//Enable PB4 port control for controlling RS485 receive and transmit.
-	setBit(&(GPIOD->PCTL), 4, 1);
+	setBit(&(GPIOB->PCTL), 16, 1);
 	//Disable analogue mode.
-	setBit(&(GPIOD->AMSEL), 1, 0);
+	setBit(&(GPIOB->AMSEL), 4, 0);
 	//Enable PB4 as direction output
-	setBit(&(GPIOD->DIR), 1, 1);
+	setBit(&(GPIOB->DIR), 4, 1);
 	//Disable Alternate functions
-	setBit(&(GPIOD->AFSEL), 1, 0);
+	setBit(&(GPIOB->AFSEL), 4, 0);
 	//Enable digital
-	setBit(&(GPIOD->DEN), 1, 1);
+	setBit(&(GPIOB->DEN), 4, 1);
 }
 
 void initializeUART5(void){
@@ -231,58 +221,8 @@ void readPackage(uint8_t *package){
 }
 
 /*
- * 	##### Sending data to UART -> RS485 #####
+ * 	##### Writing data to UART -> RS485 #####
  */
-/* --- functions names that start with "__" are for use in this file only. --- */
-void __writeCharByteOut(char c){
-	/*	Wait for UART5 not to be busy (full).
-	 *		Read UART-FR bit 5 -> 0 or 1 -> compare to != 0.
-	 *		0 is not full, 1 is full.
-	 *	Print data (8 bits) to UART5 DATA.
-	 */
-	while((UART5->FR & (1<<5)) != 0);
-	UART5->DR = c;
-}
-
-void __writeIntByteOut(int c){
-	/*	Wait for UART5 not to be busy (full).
-	 *		Read UART-FR bit 5 -> 0 or 1 -> compare to != 0.
-	 *		0 is not full, 1 is full.
-	 *	Print data (8 bits) to UART5 DATA.
-	 */
-	while((UART5->FR & (1<<5)) != 0);
-	UART5->DR = c;
-}
-
-void writeIntPackageOut(uint8_t *package, uint8_t change_rs485_mode){
-	/*
-	 * Int is casted to char, so firs 8 lower bits are only sent out.
-	 */
-	int i;
-	if (change_rs485_mode){
-		setCommunicationToTransmit();
-	}
-	for (i = 0; i<PACKAGE_SIZE; ++i){
-		__writeCharByteOut((char)package[i]);
-	}
-	debug_writeStringOut("\n\r", 0);
-	if (change_rs485_mode){
-		setCommunicationToReceive();
-	}
-}
-
-void writeCharPackageOut(uint8_t *package, uint8_t change_rs485_mode){
-	int i;
-	if (change_rs485_mode){
-		setCommunicationToTransmit();
-	}
-	for (i = 0; i<PACKAGE_SIZE; ++i){
-		__writeCharByteOut((char)package[i]);
-	}
-	if (change_rs485_mode){
-		setCommunicationToReceive();
-	}
-}
 
 void sendResults(uint8_t results[]){
 	if (GET_MEASUREMENTS_PRESENT_BIT){
@@ -292,12 +232,12 @@ void sendResults(uint8_t results[]){
 		setCommunicationToTransmit();
 		while (SAMPLE_COUNT >= counter){
 			/*
-			 * results[counter] & 0xFC0; //ADC result 0-6 bit mask: 0b000000111111 = 63 = 3F
+			 * results[counter] & 0xFC0; //ADC result bits 0-6, mask: 0b000000111111 = 63 = 3F
 			 * plus data start mask (0b01******)
 			 */
 			package[1] = DATA_START|(results[counter]>>6);
 			/*
-			 * ADC result 7-11 bit mask: 0b111111000000 = 4032 = FC0
+			 * ADC result bits 7-11, mask: 0b111111000000 = 4032 = FC0
 			 * plus data end mask (0b11******)
 			 */
 			package[2] = DATA_END|results[counter] & 0x3F;
@@ -306,16 +246,11 @@ void sendResults(uint8_t results[]){
 			 */
 			package[3] = calculate_CRC(package);
 
-			if (PRINT_DEBUG){
-				debug_writeByteInBinary(results[counter]>>8, 0);
-				debug_writeByteInBinary(results[counter] & 0xFF, 0);
-				debug_writeStringOut(" --> ", 0);
-				debug_writePackageBytesInBinary(package, 0);
-				debug_writeStringOut("\n\r\n\r", 0);
-			}else{
-				writeCharPackageOut(package, 0);
-			}
+			writePackageOut(package, 0);
 			counter++;
+
+			//Slight delay before sending new pacakge.
+			//Might require more precise timer and not that long delay.
 			delay_timer(1);
 		}
 		setCommunicationToReceive();
@@ -330,64 +265,34 @@ void sendState(void){
 	package[1] = GET_STATE;
 	package[2] = state;
 	package[3] = calculate_CRC(package);
-	writeCharPackageOut(package, 0);
+	writePackageOut(package, 0);
 	setCommunicationToReceive();
 	clearInvalidPackageBit();
 }
 
-/*
- * Debug functions for sending data out.
- */
-
-void debug_writeStringOut(char * string, uint8_t change_rs485_mode){
-	if (change_rs485_mode){
-		setCommunicationToTransmit();
-	}
-	while(*string){
-		__writeCharByteOut(*(string++));
-	}
-	if (change_rs485_mode){
-		setCommunicationToReceive();
-	}
-}
-
-void debug_writeByteInBinary(char byte, uint8_t change_rs485_mode){
-	int j;
-	if (change_rs485_mode){
-		setCommunicationToTransmit();
-	}
-	/* Every bit in byte */
-	for (j=7; j>=0; --j){
-		/* If it is 1, write 1 to output */
-		if ((byte & (1<<j)) != 0){
-			debug_writeStringOut("1", 0);
-		}else{ /* Else write 0 to output */
-			debug_writeStringOut("0", 0);
-		}
-	}
-	if (change_rs485_mode){
-		setCommunicationToReceive();
-	}
-}
-
-void debug_writePackageBytesInBinary(uint8_t package[], uint8_t change_rs485_mode){
-	/*
-	 * For debug purposes it's sometimes better to see what is sent out.
-	 */
+void writePackageOut(uint8_t *package, uint8_t change_rs485_mode){
 	int i;
 	if (change_rs485_mode){
 		setCommunicationToTransmit();
 	}
-	/* Every package byte */
 	for (i = 0; i<PACKAGE_SIZE; ++i){
-		debug_writeByteInBinary(package[i], 0);
-		if (i<3){
-			debug_writeStringOut(" -- ", 0);
-		}else{
-			debug_writeStringOut("\n\r\n\r", 0);
-		}
+		__writeByteOut(package[i]);
 	}
 	if (change_rs485_mode){
 		setCommunicationToReceive();
 	}
+}
+
+/*
+ * 	##### Sending data to UART -> RS485 #####
+ */
+/* --- functions names that start with "__" are for use in this file only. --- */
+void __writeByteOut(uint8_t out){
+	/*	Wait for UART5 not to be busy (full).
+	 *		Read UART-FR bit 5 -> 0 or 1 -> compare to != 0.
+	 *		0 is not full, 1 is full.
+	 *	Print data (8 bits) to UART5 DATA.
+	 */
+	while((UART5->FR & (1<<5)) != 0);
+	UART5->DR = out;
 }
