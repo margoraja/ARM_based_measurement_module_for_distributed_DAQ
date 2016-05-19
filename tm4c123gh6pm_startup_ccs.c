@@ -48,8 +48,6 @@ extern void _c_int00(void);
 //
 //*****************************************************************************
 extern uint32_t __STACK_TOP;
-extern void syncCableInterupHandler(void);
-extern void communicationTimeoutInterupHandler(void);
 
 //*****************************************************************************
 //
@@ -57,6 +55,8 @@ extern void communicationTimeoutInterupHandler(void);
 //
 //*****************************************************************************
 // To be added by user
+extern void syncCableInterupHandler(void);
+extern void communicationTimeoutInterupHandler(void);
 
 //*****************************************************************************
 //

@@ -121,7 +121,7 @@ void initializeUART5(void){
 	/*		Communikation clocks, baud-rate.
 	 *		Using default clock which is 16MHz.
 	 *		Required baud-rate for communication is 115200.
-	 *		Integer BRD = 16000000/(16*115200) = 8,...-> 8
+	 *		Integer BRD = System frequency/(16*115200) = 8,...-> 8
 	 *		Fraction BRD = (BRD - integer(BRD))*64 + 0,5 = 44,... -> 44
 	 * 		115200: iBRD 8, fBRD 44
 	 */

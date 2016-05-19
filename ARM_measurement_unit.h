@@ -51,7 +51,7 @@
  * ==========	Communication configuration	==========
  * ===================================================
  * 	Required baud-rate for communication is 115200.
- * 	Integer BRD = 16000000/(16*115200) = 8,... -> 8
+ * 	Integer BRD = System frequency/(16*115200) = 8,... -> 8
  * 	Fraction BRD = (BRD - integer(BRD))*64 + 0,5 = 44,... -> 44
  * 	115200: iBRD 8, fBRD 44*/
 #define PACKAGE_SIZE 4
@@ -59,9 +59,9 @@
 #define CRC_BYTE_COUNT 1 //Currently not supported
 #define CRC_BIT_CHECK_FOR_FLIP 0b10000000
 #define CRC_BIT_FLIP 0b00000111
-#define BAUD_RATE 115200
-#define INTEGER_BRD 8
-#define FLOAT_BRD 44
+#define BAUD_RATE 1000000//115200
+#define INTEGER_BRD 1//8
+#define FLOAT_BRD 0//44
 #define RS485_RECEIVE 0 //Receive mode level. High = 1, Low = 0.
 #define UART_SWITCHING_DELAY 10 // Uart switching delay in milliseconds
 #define COMMUNICATION_TIMEOUT 16000000 //For discarding incomplete packages.
@@ -89,7 +89,7 @@
  * 	How many times measurements are done.
  * 	Limited to allocatable memory size, limit is: .
  *	1 = 62.5 nano seconds (+ Internal delay which is x ns) if core clock is 16MHz.*/
-#define SAMPLE_COUNT 1000 /* Limit is between 16-17k currently */
+#define SAMPLE_COUNT 16000 /* Limit is between 16-17k currently */
 #define SAMPLE_DELAY 1000 /* Must find out how fast it actually is capable of measuring. */
 #define OVERWRITE_OLD_RESULTS 0 /* 0 to keep old results if not sent, otherwise will overwrite, setting it to 1 may cause iterrupts to perform two measurements */
 

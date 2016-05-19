@@ -17,32 +17,10 @@ void waitNextAction(void);
 void clearMeasurementResults(void);
 void measurementPwmAndAdc(uint8_t *);
 void inintSyncWireInterupt(void);
+void enableGpiodInterrupts(void);
+void disableGpiodInterrupts(void);
 
 extern uint8_t measurement_results[SAMPLE_COUNT] = {0};
-
-void syncCableInterupHandler(void){
-	//Check if interrupt occurred during communication, if so, set flag up.
-	setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
-	//Perform measurement work only if interrupt was received from PD1
-	if (GET_READY_TO_WORK_BIT && getBit(GPIOD->RIS, 1)){
-		measurementPwmAndAdc(measurement_results);
-	}
-	//Clear the interrupt flag
-	GPIOD->ICR = (1<<0);
-	//Clear any pending interrupts in register
-	NVIC->ICPR[0] |= (1<<3);
-}
-
-void communicationTimeoutInterupHandler(void){
-	//Only when timeotut was reached.
-	if (getBit(TIMER3->RIS, 0)){
-		communication_timeout = 1;
-	}
-	//Clear the interrupt flag
-	TIMER3->ICR = (1<<0);
-	//Clear any pending interrupts in register
-	NVIC->ICPR[1] |= (1<<3);
-}
 
 void main(void){
 	byte_counter = 0;
@@ -57,7 +35,7 @@ void main(void){
 	delay_timer_init();
 
 	//Init PWM signal generator
-	initializePWM();
+	//initializePWM();
 
 	//Init analogue-digital-converter for measurements
 	initAdc0();
@@ -74,7 +52,7 @@ void main(void){
 	//Set status to ready to work.
 	setReadyToWorkBit();
 
-	enablePWM();
+	//enablePWM();
 
 	//	Main program and logic
 	waitNextAction();
@@ -83,8 +61,10 @@ void main(void){
 void waitNextAction(){
 	uint8_t package[PACKAGE_SIZE+1];
 	while (1){
+		enableGpiodInterrupts();
 		// Read new pacakge, where first byte is ID or GLOBAL_ID
 		readPackage(package);
+		disableGpiodInterrupts();
 
 		// Byte did not contain ID.
 		if (package[0] == ID){
@@ -203,5 +183,42 @@ void inintSyncWireInterupt(void){
 	// enable interrupt in NVIC and set priority to 6
 	NVIC->IP[3] |= (6<<5);       		// Set interrupt priority to 6
 	setBit(&(NVIC->ICPR[0]), 3, 1);		// Clear pending interrupts
-	setBit(&(NVIC->ISER[0]), 3, 1);     // enable Interrupts on GPIO D
+	enableGpiodInterrupts();
+}
+
+void enableGpiodInterrupts(void){
+	if (!getBit(NVIC->ISER[0], 3)){
+		setBit(&(NVIC->ISER[0]), 3, 1);     // enable Interrupts on GPIO D
+	}
+}
+
+void disableGpiodInterrupts(void){
+	if (getBit(NVIC->ISER[0], 3)){
+		setBit(&(NVIC->ISER[0]), 3, 0);     // disable Interrupts on GPIO D
+	}
+}
+
+void communicationTimeoutInterupHandler(void){
+	//Only when timeotut was reached.
+	if (getBit(TIMER3->RIS, 0)){
+		communication_timeout = 1;
+	}
+	//Clear the interrupt flag
+	TIMER3->ICR = (1<<0);
+	//Clear any pending interrupts in register
+	NVIC->ICPR[1] |= (1<<3);
+}
+
+void syncCableInterupHandler(void){
+	//Perform measurement work only if interrupt was received from PD1
+	if (GET_READY_TO_WORK_BIT && getBit(GPIOD->RIS, 0)){
+		//Perform measurements
+		measurementPwmAndAdc(measurement_results);
+		//Check if interrupt occurred during communication, if so, set flag up.
+		setIntOccurredValue(CHECK_INT_DURING_COMMUNICATION);
+	}
+	//Clear the interrupt flag
+	GPIOD->ICR = (1<<0);
+	//Clear any pending interrupts in register
+	NVIC->ICPR[0] |= (1<<3);
 }
